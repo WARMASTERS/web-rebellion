@@ -1,0 +1,14 @@
+#game.container{role: "main", "ng-controller" => "GameController"}
+  #chat
+    %div{"ng-repeat" => "message in messages"}
+      {{ message.user }}: {{ message.message }}
+
+  %form#chatform.form-inline{"ng-submit" => "sendChat(msg)"}
+    .form-group
+      %input#msg.form-control{placeholder: "type message here", "ng-model" => "msg"}
+    .form-group
+      %button.btn.btn-default{type: "submit"} Send Message
+
+  %form#leaveGame{action: "/games/leave", method: "post"}
+    .form-group
+      %button.btn.btn-danger{type: "submit"} Leave Game

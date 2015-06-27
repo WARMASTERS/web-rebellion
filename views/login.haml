@@ -1,0 +1,19 @@
+#login.container{role: "main"}
+  - if failed
+    .alert.alert-danger{role: "alert"}
+      %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
+      %span.sr-only Error:
+      Wrong password for that user
+
+  .page-header
+    %h1 Log in
+
+  %form{action: "/login", method: "post"}
+    .form-group
+      %label{for: "username"} Username:
+      %input.form-control{id: "username", name: "username", placeholder: "Username", value: username}
+    .form-group
+      %label{for: "password"} Password:
+      %input.form-control{id: "password", name: "password", type: "password"}
+    .form-group
+      %button.btn.btn-default{type: "submit"} Log In
