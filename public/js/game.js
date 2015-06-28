@@ -50,9 +50,11 @@ app.controller('LobbyController', function($controller, $http, $scope) {
   $controller('BaseController', {$scope: $scope});
   $scope.users = [];
   $scope.selectedUsernames = [];
+  $scope.currentProposal = null;
 
   $http.get('/games.json').success(function(data, status, headers, config) {
     $scope.users = data.users;
+    $scope.currentProposal = data.proposal;
   });
 
   var toggleSelect = function(array, item) {
