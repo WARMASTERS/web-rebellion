@@ -15,6 +15,14 @@
         "ng-click" => "toggleUserSelect(user.username)"}
         %label{for: "user{{ $index }}"} {{ user.username }}
         %span{"ng-if" => "user.username == myUsername"} (You!)
+    %div Roles:
+    #roles.form-group
+      - all_roles.each_key do |role|
+        %span.label{"ng-class" => "selectedRoles.indexOf('#{role}') != -1 ? 'label-success' : 'label-default'"}
+          %input{id: "role-#{role}", name: "role[]", type: "checkbox",
+          "ng-checked" => "selectedRoles.indexOf('#{role}') != -1",
+          "ng-click" => "toggleRoleSelect('#{role}')"}
+          %label{for: "role-#{role}"}= role
     .form-group
       %button.btn.btn-primary{type: "submit"} Propose Game
 

@@ -1,5 +1,6 @@
 require 'json'
 require 'rebellion_g54/game'
+require 'rebellion_g54/role'
 require 'securerandom'
 require 'sinatra/base'
 require 'time'
@@ -21,6 +22,10 @@ module WebRebellion; class App < Sinatra::Application
   helpers do
     def current_username
       current_user && current_user.name
+    end
+
+    def all_roles
+      RebellionG54::Role::ALL
     end
   end
 
@@ -136,8 +141,9 @@ module WebRebellion; class App < Sinatra::Application
     eligible_users << current_user
     eligible_users.uniq!
 
-    # TODO: roles
-    roles = [:director, :banker, :guerrilla, :politician, :peacekeeper]
+    # In ruby 2.2 since symbols are garbage-collected,
+    # it should be OK to to_sym strings from user input.
+    roles = body['roles'].map(&:to_sym).select { |r| all_roles.has_key?(r) }
 
     size_ok = (RebellionG54::Game::MIN_PLAYERS..RebellionG54::Game::MAX_PLAYERS).include?(eligible_users.size)
 

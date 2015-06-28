@@ -50,6 +50,7 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   $controller('BaseController', {$scope: $scope});
   $scope.users = [];
   $scope.selectedUsernames = [];
+  $scope.selectedRoles = ['banker', 'director', 'guerrilla', 'politician', 'peacekeeper'];
   $scope.currentProposal = null;
   $scope.lastProposal = null;
   $scope.myUsername = null;
@@ -73,10 +74,14 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
     toggleSelect($scope.selectedUsernames, username);
   }
 
+  $scope.toggleRoleSelect = function(rolename) {
+    toggleSelect($scope.selectedRoles, rolename);
+  }
+
   $scope.submitProposal = function() {
     $http.post('/proposals', {
       users: $scope.selectedUsernames,
-      // TODO: roles
+      roles: $scope.selectedRoles,
     });
   }
 
