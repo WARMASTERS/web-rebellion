@@ -4,6 +4,10 @@
     %span.sr-only Error:
     You've been disconnected by {{ disconnectedBy }}
 
+  #users
+    %div{"ng-repeat" => "user in users"}
+      {{ user }}
+
   %table.table.table-striped
     %thead
       %tr

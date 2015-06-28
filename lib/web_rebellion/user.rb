@@ -29,4 +29,12 @@ class User
   def try_password(password)
     @password == password
   end
+
+  def serialize
+    {
+      username: @username,
+      in_proposal: !!@proposal,
+      in_game: !!@game,
+    }
+  end
 end

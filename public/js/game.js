@@ -31,6 +31,12 @@ app.controller('GameController', function($controller, $http, $scope) {
 
 app.controller('LobbyController', function($controller, $http, $scope) {
   $controller('BaseController', {$scope: $scope});
+  $scope.users = [];
+
+  $http.get('/games.json').success(function(data, status, headers, config) {
+    $scope.users = data.users;
+  });
+
   var es = new EventSource('/stream');
   es.addEventListener('chat', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
