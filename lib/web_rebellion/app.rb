@@ -12,9 +12,6 @@ module WebRebellion; class App < Sinatra::Application
   set server: 'thin'
   set root: File.dirname(File.dirname(File.dirname(__FILE__)))
 
-  # keyed by game id
-  set game_connections: Hash.new { |h, k| h[k] = [] }
-
   set users_by_id: {}
   set users_by_username: {}
 
@@ -36,6 +33,10 @@ module WebRebellion; class App < Sinatra::Application
 
   def current_proposal
     current_user.proposal
+  end
+
+  def current_stream
+    current_user.event_stream
   end
 
   before do
@@ -154,21 +155,23 @@ module WebRebellion; class App < Sinatra::Application
     g = current_game
     if g
       json = JSON.dump({user: current_username, message: json_body['message']})
-      settings.game_connections[g.id].each { |out|
-        out << "event: chat\n"
-        out << "data: #{json}\n\n"
+      g.each_player { |player|
+        player.event_stream << "event: chat\n"
+        player.event_stream << "data: #{json}\n\n"
       }
     end
     204
   end
 
-  get '/game/stream', provides: 'text/event-stream' do
-    g = current_game
-    if g
-      stream(:keep_open) do |out|
-        settings.game_connections[g.id] << out
-        out.callback { settings.game_connections[g.id].delete(out) }
+  get '/stream', provides: 'text/event-stream' do
+    stream(:keep_open) do |out|
+      # One stream per player, please.
+      if current_stream
+        current_stream << "event: disconnect\n"
+        current_stream << "data: #{request.ip}\n\n"
       end
+      current_user.event_stream = out
+      out.callback { current_user.event_stream = nil if current_stream == out }
     end
     200
   end
