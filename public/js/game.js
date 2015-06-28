@@ -51,6 +51,7 @@ app.controller('LobbyController', function($controller, $http, $scope) {
   $scope.users = [];
   $scope.selectedUsernames = [];
   $scope.currentProposal = null;
+  $scope.lastProposal = null;
 
   $http.get('/games.json').success(function(data, status, headers, config) {
     $scope.users = data.users;
@@ -78,7 +79,14 @@ app.controller('LobbyController', function($controller, $http, $scope) {
   }
 
   var onNewProposal = function(event) {
-    console.log(event.data);
+    $scope.$apply(function() {
+      if ($scope.currentProposal !== null) {
+        // If current is null but last is non-null,
+        // we wouldn't want to replace last.
+        $scope.lastProposal = $scope.currentProposal;
+      }
+      $scope.currentProposal = JSON.parse(event.data);
+    });
   }
 
   var es = new EventSource('/stream');
