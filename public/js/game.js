@@ -63,10 +63,23 @@ app.controller('GameController', function($controller, $http, $scope) {
     });
   }
 
+  var onGameUpdate = function(event) {
+    $scope.$apply(function() {
+      var game = JSON.parse(event.data);
+      $scope.game = game;
+      var prefix = "Turn " + game.turn + ": ";
+      $scope.gameMessages.push({
+        message: prefix + $scope.formatDecision(game),
+        time: game.time,
+      });
+    });
+  }
+
   var es = new EventSource('/stream');
   es.addEventListener('chat', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
   es.addEventListener('game.message', onGameMessage, false);
+  es.addEventListener('game.update', onGameUpdate, false);
 });
 
 app.controller('LobbyController', function($controller, $http, $scope, $window) {
