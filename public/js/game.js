@@ -47,6 +47,10 @@ app.controller('GameController', function($controller, $http, $scope) {
     decision_choices: [],
   };
   $scope.gameMessages = [];
+  $scope.labelToConfirm = null;
+  $scope.choiceToConfirm = null;
+  $scope.choiceError = null;
+  $scope.choiceArgs = [];
 
   $http.get('/game.json').success(function(data, status, headers, config) {
     $scope.game = data;
@@ -55,6 +59,61 @@ app.controller('GameController', function($controller, $http, $scope) {
   $scope.formatDecision = function(game) {
     return game.decision + " - Waiting on " + game.decision_makers.join(', ') +
       " to choose between " + game.decision_choices.join(', ');
+  }
+
+  $scope.makeChoice = function(label, choice) {
+    if (choice.needs_args) {
+      $scope.labelToConfirm = label;
+      $scope.choiceToConfirm = choice;
+    } else {
+      sendChoice(label, []);
+    }
+  }
+
+  $scope.resetChoice = function() {
+    $scope.labelToConfirm = null;
+    $scope.choiceToConfirm = null;
+    $scope.choiceArgs = [];
+  }
+
+  $scope.addPlayerArg = function(player) {
+    if (!$scope.choiceToConfirm) {
+      return false;
+    }
+    $scope.choiceArgs.push({type: "player", value: player.username});
+  }
+
+  $scope.addRoleArg = function(role) {
+    if (!$scope.choiceToConfirm) {
+      return false;
+    }
+    $scope.choiceArgs.push({type: "role", value: role});
+  }
+
+  $scope.deleteArg = function(idx) {
+    if (!$scope.choiceToConfirm) {
+      return false;
+    }
+    $scope.choiceArgs.splice(idx, 1);
+  }
+
+  $scope.confirmChoice = function() {
+    if (!$scope.choiceToConfirm) {
+      return false;
+    }
+    sendChoice($scope.labelToConfirm, $scope.choiceArgs);
+  }
+
+  var sendChoice = function(label, args) {
+    $scope.choiceError = null;
+    $http.post('/game/choice', {
+      choice: label,
+      args: args,
+    }).success(function(data, status, headers, config) {
+      $scope.resetChoice();
+    }).error(function(data, status, headers, config) {
+      $scope.choiceError = data;
+    });
   }
 
   var onGameMessage = function(event) {

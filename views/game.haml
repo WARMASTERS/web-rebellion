@@ -12,6 +12,32 @@
     .turn Current turn: {{ game.turn }}
     .decision {{ formatDecision(game) }}
 
+    .alert.alert-danger{role: "alert", "ng-if" => 'choiceError'}
+      %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
+      %span.sr-only Error:
+      Choice failed because {{ choiceError }}
+
+    %div{"ng-if" => "choiceToConfirm"}
+      Please confirm your choice of {{ labelToConfirm }} and add any targets.
+
+      %div
+        Current targets:
+        %span{class: "label label-default", "ng-repeat" => "arg in choiceArgs"}
+          {{ arg.type }}: {{ arg.value }}
+          %a{"ng-click" => "deleteArg($index)"} (x)
+
+      %button.btn.btn-sm.btn-primary{"ng-click" => "confirmChoice()"} Confirm
+      %button.btn.btn-sm.btn-danger{"ng-click" => "resetChoice()"} Cancel
+
+    %table.table.table-condensed{"ng-if" => "!choiceToConfirm"}
+      %tr{"ng-repeat" => "(label, choice) in game.my_choices"}
+        %td{"ng-if" => "choice.available"}
+          %button.btn.btn-sm.btn-primary{"ng-click" => "makeChoice(label, choice)"} {{ label }}
+        %td{"ng-if" => "!choice.available"}
+          %button.btn.btn-sm.btn-default{disabled: true, "ng-if" => "!choice.available"} {{ label }}
+        %td
+          {{ choice.available ? choice.description : choice.why_unavailable }}
+
   #gamePlayers
     %table.table.table-condensed
       %tr
@@ -21,7 +47,8 @@
         %th Tokens
       %tr{"ng-repeat" => "player in game.players"}
         %td
-          {{ player.username }}
+          %a{"ng-if" => "choiceToConfirm", "ng-click" => "addPlayerArg(player)"} {{ player.username }}
+          %span{"ng-if" => "!choiceToConfirm"} {{ player.username }}
         %td {{ player.coins }}
         %td
           %span.label.label-default{"ng-repeat" => "card in player.cards"}
@@ -39,7 +66,8 @@
   %h1 Roles
   #gameRoles
     %span.label.label-default{"ng-repeat" => "(role, info) in game.roles"}
-      {{ role }}
+      %a{"ng-if" => "choiceToConfirm", "ng-click" => "addRoleArg(role)"} {{ role }}
+      %span{"ng-if" => "!choiceToConfirm"} {{ role }}
       {{ info.tokens.join(', ') }}
 
   %h1 Chat
