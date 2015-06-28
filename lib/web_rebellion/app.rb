@@ -87,6 +87,13 @@ module WebRebellion; class App < Sinatra::Application
     settings.games.values.map { |g| serialize_game(g) }
   end
 
+  def watch_game(game, user)
+    old_game = user.game
+    user.game = game
+    game.add_watcher(user)
+    update_lobby_users unless old_game
+  end
+
   def send_event(users, type, data)
     users.each { |u|
       stream = u.event_stream
@@ -329,6 +336,8 @@ module WebRebellion; class App < Sinatra::Application
 
     settings.games.delete(game.id) if game.winner
 
+    send_event(game.watchers, 'game.update', JSON.dump(public_info))
+
     204
   end
 
@@ -340,6 +349,7 @@ module WebRebellion; class App < Sinatra::Application
     halt 400, 'cannot leave game in progress' if in_game && !game.winner
 
     current_user.game = nil
+    game.remove_watcher(current_user)
     update_lobby_users
 
     redirect '/games'
@@ -349,13 +359,18 @@ module WebRebellion; class App < Sinatra::Application
     game = current_game
     halt '{}' unless game
     public_info = full_game_public_info(game)
-    private_info = full_game_private_info(game, game.find_player(current_user))
+    player = game.find_player(current_user)
+
+    # A watcher may ask for game.json. The watcher should get public info only.
+    return JSON.dump(public_info) unless player
+
+    private_info = full_game_private_info(game, player)
     JSON.dump(public_info.merge(private_info))
   end
 
   post '/chat' do
     g = current_game
-    target_players = g ? g.users : lobby_users
+    target_players = g ? (g.users | g.watchers): lobby_users
 
     json = JSON.dump({user: current_username, message: json_body['message'], time: Time.now.to_i})
     send_event(target_players, 'chat.' + (g ? 'game' : 'lobby'), json)
