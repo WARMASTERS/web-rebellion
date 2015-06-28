@@ -32,10 +32,28 @@ app.controller('GameController', function($controller, $http, $scope) {
 app.controller('LobbyController', function($controller, $http, $scope) {
   $controller('BaseController', {$scope: $scope});
   $scope.users = [];
+  $scope.selectedUsernames = [];
 
   $http.get('/games.json').success(function(data, status, headers, config) {
     $scope.users = data.users;
   });
+
+  var toggleSelect = function(array, item) {
+    var idx = array.indexOf(item);
+    if (idx > -1) {
+      array.splice(idx, 1);
+    } else {
+      array.push(item);
+    }
+  }
+
+  $scope.toggleUserSelect = function(username) {
+    toggleSelect($scope.selectedUsernames, username);
+  }
+
+  $scope.submitProposal = function() {
+    console.log($scope.selectedUsernames);
+  }
 
   var es = new EventSource('/stream');
   es.addEventListener('chat', $scope.receiveChat, false);

@@ -4,9 +4,17 @@
     %span.sr-only Error:
     You've been disconnected by {{ disconnectedBy }}
 
-  #users
-    %div{"ng-repeat" => "user in users"}
-      {{ user }}
+  %form#proposal.form-inline{"ng-submit" => "submitProposal()"}
+    %div Users:
+    #users.form-group
+      %span.label{"ng-repeat" => "user in users",
+      "ng-class" => "selectedUsernames.indexOf(user.username) != -1 ? 'label-success' : 'label-default'"}
+        %input{id: "user{{ $index }}", name: "user[]", type: "checkbox",
+        "ng-checked" => "selectedUsernames.indexOf(user.username) != -1",
+        "ng-click" => "toggleUserSelect(user.username)"}
+        %label{for: "user{{ $index }}"} {{ user.username }}
+    .form-group
+      %button.btn.btn-primary{type: "submit"} Propose Game
 
   %table.table.table-striped
     %thead
