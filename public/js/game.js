@@ -92,6 +92,10 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
     toggleSelect($scope.selectedRoles, rolename);
   }
 
+  $scope.userAcceptedProposal = function(proposal) {
+    return $scope.myUsername in proposal.accepted_players;
+  }
+
   $scope.proposalValid = function() {
     var usersOk = 1 <= $scope.selectedUsernames.length && $scope.selectedUsernames.length <= 5;
     var rolesOk = $scope.selectedRoles.length == 5;
