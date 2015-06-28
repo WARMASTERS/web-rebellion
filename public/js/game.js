@@ -99,8 +99,15 @@ app.controller('LobbyController', function($controller, $http, $scope) {
     });
   }
 
+  var onUpdateProposal = function(event) {
+    $scope.$apply(function() {
+      $scope.currentProposal = JSON.parse(event.data);
+    });
+  }
+
   var es = new EventSource('/stream');
   es.addEventListener('chat', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
   es.addEventListener('proposal.new', onNewProposal, false);
+  es.addEventListener('proposal.update', onUpdateProposal, false);
 });
