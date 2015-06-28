@@ -4,6 +4,10 @@
     %span.sr-only Error:
     You've been disconnected by {{ disconnectedBy }}
 
+  #gameMessages
+    %div{"ng-repeat" => "message in gameMessages"}
+      [{{ formatTime(message.time) }}] {{ message.message }}
+
   #chat
     %div{"ng-repeat" => "message in messages"}
       [{{ formatTime(message.time) }}] {{ message.user }}: {{ message.message }}

@@ -2,3 +2,8 @@
   height: 20em;
   overflow: scroll;
 }
+
+#gameMessages {
+  height: 20em;
+  overflow: scroll;
+}

@@ -42,14 +42,22 @@ app.controller('BaseController', function($http, $scope) {
 app.controller('GameController', function($controller, $http, $scope) {
   $controller('BaseController', {$scope: $scope});
   $scope.game = {};
+  $scope.gameMessages = [];
 
   $http.get('/game.json').success(function(data, status, headers, config) {
     $scope.game = data;
   });
 
+  var onGameMessage = function(event) {
+    $scope.$apply(function() {
+      $scope.gameMessages.push(JSON.parse(event.data));
+    });
+  }
+
   var es = new EventSource('/stream');
   es.addEventListener('chat', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
+  es.addEventListener('game.message', onGameMessage, false);
 });
 
 app.controller('LobbyController', function($controller, $http, $scope, $window) {
