@@ -126,9 +126,17 @@ app.controller('GameController', function($controller, $http, $scope) {
     $scope.$apply(function() {
       var game = JSON.parse(event.data);
       $scope.game = game;
-      var prefix = "Turn " + game.turn + ": ";
+
+      var message;
+      if (game.winner) {
+        message = 'Congratulations! ' + game.winner + ' is the winner!';
+      }
+      else {
+        var prefix = 'Turn ' + game.turn + ': ';
+        message = prefix + $scope.formatDecision(game);
+      }
       $scope.gameMessages.push({
-        message: prefix + $scope.formatDecision(game),
+        message: message,
         time: game.time,
       });
     });

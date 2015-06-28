@@ -122,6 +122,7 @@ module WebRebellion; class App < Sinatra::Application
       turn: game.turn_number,
       roles: roles,
       players: player_info,
+      winner: game.winner && game.winner.username,
       decision: game.decision_description,
       decision_makers: choice_names.keys.map(&:username),
       decision_choices: choice_names.values.flatten.uniq,
@@ -315,7 +316,7 @@ module WebRebellion; class App < Sinatra::Application
     # Action succeeded. Send all players a full update.
     # TODO: Consider incremental updates once we have support.
     # That's pretty low priority since the full update is not that long.
-    public_info = full_game_public_info(game).merge(time: Time.now.to_i)
+    public_info = full_game_public_info(game, show_secrets: !!game.winner).merge(time: Time.now.to_i)
     game.each_player.each { |player|
       stream = player.user.event_stream
       next unless stream
@@ -323,6 +324,8 @@ module WebRebellion; class App < Sinatra::Application
       stream << "event: game.update\n"
       stream << "data: #{JSON.dump(public_info.merge(private_info))}\n\n"
     }
+
+    settings.games.delete(game.id) if game.winner
 
     204
   end
