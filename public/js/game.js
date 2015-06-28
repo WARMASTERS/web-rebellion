@@ -1,22 +1,37 @@
 var app = angular.module('webRebellion', []);
 
-app.controller('GameController', function($http, $scope) {
+app.controller('BaseController', function($http, $scope) {
   $scope.messages = [];
+  $scope.disconnectedBy = null;
 
   $scope.sendChat = function(message) {
     $http.post('/chat', {message: message});
     $scope.msg = '';
   }
 
-  var receiveChat = function(event) {
+  $scope.receiveChat = function(event) {
     $scope.$apply(function() {
       $scope.messages.push(JSON.parse(event.data));
     });
   }
 
-  var es = new EventSource('/game/stream');
-  es.addEventListener('chat', receiveChat, false);
+  $scope.disconnected = function(event) {
+    $scope.$apply(function() {
+      $scope.disconnectedBy = event.data;
+    });
+  }
 });
 
-app.controller('LobbyController', function($http, $scope) {
+app.controller('GameController', function($controller, $http, $scope) {
+  $controller('BaseController', {$scope: $scope});
+  var es = new EventSource('/stream');
+  es.addEventListener('chat', $scope.receiveChat, false);
+  es.addEventListener('disconnect', $scope.disconnected, false);
+});
+
+app.controller('LobbyController', function($controller, $http, $scope) {
+  $controller('BaseController', {$scope: $scope});
+  var es = new EventSource('/stream');
+  es.addEventListener('chat', $scope.receiveChat, false);
+  es.addEventListener('disconnect', $scope.disconnected, false);
 });
