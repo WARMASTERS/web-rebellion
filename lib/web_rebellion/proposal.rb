@@ -1,3 +1,5 @@
+require 'time'
+
 module WebRebellion; class Proposal
   attr_reader :initiator
 
@@ -5,6 +7,7 @@ module WebRebellion; class Proposal
     @initiator = initiator
     @players = players.map { |p| [p, false] }.to_h
     @roles = roles.freeze
+    @time = Time.now.to_i
   end
 
   def assert_in_game(player)
@@ -32,6 +35,7 @@ module WebRebellion; class Proposal
       initiator: @initiator.username,
       players: @players.keys.map(&:username),
       roles: @roles,
+      time: @time,
     }
   end
 end; end
