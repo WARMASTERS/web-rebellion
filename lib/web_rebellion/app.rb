@@ -277,6 +277,42 @@ module WebRebellion; class App < Sinatra::Application
     end
   end
 
+  post '/game/choice' do
+    user = current_user
+    game = user && user.game
+    halt 400, 'No game' unless user && game
+
+    body = json_body
+    choice = body['choice']
+    args = body['args'].map { |arg|
+      case arg['type']
+      when 'player'
+        u = user_from_param(arg['value'])
+        halt 400, "No such user" unless u
+        u
+      when 'role'; arg['value']
+      else; halt 400, "No type #{arg['type']}"
+      end
+    }
+
+    success, error = game.take_choice(current_user, choice, *args)
+    halt 400, error unless success
+
+    # Action succeeded. Send all players a full update.
+    # TODO: Consider incremental updates once we have support.
+    # That's pretty low priority since the full update is not that long.
+    public_info = full_game_public_info(game).merge(time: Time.now.to_i)
+    game.each_player.each { |player|
+      stream = player.user.event_stream
+      next unless stream
+      private_info = full_game_private_info(game, player)
+      stream << "event: game.update\n"
+      stream << "data: #{JSON.dump(public_info.merge(private_info))}\n\n"
+    }
+
+    204
+  end
+
   get '/game.json', provides: 'application/json' do
     game = current_game
     halt '{}' unless game
