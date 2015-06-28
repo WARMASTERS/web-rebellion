@@ -18,7 +18,8 @@ module WebRebellion; class Proposal
 
   def accept(player)
     assert_in_game(player)
-    @players[player] = true
+    return false if @players[player]
+    @players[player] = Time.now.to_i
   end
 
   def decline(player)
@@ -27,6 +28,10 @@ module WebRebellion; class Proposal
     @players.delete(player)
     # Reset everyone else's acceptances
     @players.each_key { |k| @players[k] = false }
+  end
+
+  def accepted_players
+    @players.to_a.select(&:last).map { |p, t| [p.username, t] }.to_h
   end
 
   def everyone_accepted?
@@ -38,6 +43,7 @@ module WebRebellion; class Proposal
       initiator: @initiator.username,
       original_players: @original_players,
       players: @players.keys.map(&:username),
+      accepted_players: accepted_players,
       declined_players: @declined_players,
       roles: @roles,
       time: @time,
