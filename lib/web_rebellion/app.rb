@@ -343,7 +343,7 @@ module WebRebellion; class App < Sinatra::Application
     target_players = g ? g.users : lobby_users
 
     json = JSON.dump({user: current_username, message: json_body['message'], time: Time.now.to_i})
-    send_event(target_players, 'chat', json)
+    send_event(target_players, 'chat.' + (g ? 'game' : 'lobby'), json)
     204
   end
 

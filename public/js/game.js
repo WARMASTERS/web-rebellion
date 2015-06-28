@@ -143,7 +143,7 @@ app.controller('GameController', function($controller, $http, $scope) {
   }
 
   var es = new EventSource('/stream');
-  es.addEventListener('chat', $scope.receiveChat, false);
+  es.addEventListener('chat.game', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
   es.addEventListener('game.message', onGameMessage, false);
   es.addEventListener('game.update', onGameUpdate, false);
@@ -242,7 +242,7 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   }
 
   var es = new EventSource('/stream');
-  es.addEventListener('chat', $scope.receiveChat, false);
+  es.addEventListener('chat.lobby', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
   es.addEventListener('game.start', onStartGame, false);
   es.addEventListener('proposal.new', onNewProposal, false);
