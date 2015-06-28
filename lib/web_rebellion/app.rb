@@ -14,6 +14,8 @@ module WebRebellion; class App < Sinatra::Application
   # keyed by game id
   set game_connections: Hash.new { |h, k| h[k] = [] }
 
+  set users: {}
+
   # keyed by id
   set games: {}
   # keyed by username
@@ -26,9 +28,13 @@ module WebRebellion; class App < Sinatra::Application
   set user_passwords: {}
 
   helpers do
-    def current_user
-      session[:user]
+    def current_username
+      session[:username]
     end
+  end
+
+  def current_user
+    settings.users[current_username.downcase]
   end
 
   def current_game
@@ -67,14 +73,14 @@ module WebRebellion; class App < Sinatra::Application
   end
 
   def join_game(game)
-    success = game.add_player(current_user)
+    success = game.add_player(current_username)
     return false unless success
     settings.user_games[current_user] = game
     true
   end
 
   def leave_game(game)
-    success = game.remove_player(current_user)
+    success = game.remove_player(current_username)
     return false unless success
     settings.user_games.delete(current_user)
     settings.games.delete(game.id) if game.size == 0
@@ -87,12 +93,12 @@ module WebRebellion; class App < Sinatra::Application
       halt haml :login, locals: {failed: true, username: params[:username]}
     end
     settings.user_passwords[username_down] = params[:password]
-    session[:user] = params[:username]
+    session[:username] = params[:username]
     redirect '/'
   end
 
   get '/logout' do
-    session[:user] = nil
+    session[:username] = nil
     redirect '/'
   end
 
@@ -113,7 +119,7 @@ module WebRebellion; class App < Sinatra::Application
 
   post '/games' do
     unless current_game
-      game = RebellionG54::Game.new(current_user)
+      game = RebellionG54::Game.new(current_username)
       settings.games[game.id] = game
       settings.game_passwords[game.id] = params[:password].to_s
       join_game(game)
@@ -157,7 +163,7 @@ module WebRebellion; class App < Sinatra::Application
   post '/chat' do
     g = current_game
     if g
-      json = JSON.dump({user: current_user, message: json_body['message']})
+      json = JSON.dump({user: current_username, message: json_body['message']})
       settings.game_connections[g.id].each { |out|
         out << "event: chat\n"
         out << "data: #{json}\n\n"

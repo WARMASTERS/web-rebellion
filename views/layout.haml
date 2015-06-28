@@ -15,7 +15,7 @@
     %nav.navbar.navbar-inverse{role: "navigation"}
       .navbar-header
         %span.navbar-brand Rebellion G54
-      - if current_user
+      - if current_username
         .pull-right
-          %span.navbar-text= current_user
+          %span.navbar-text= current_username
     = yield
