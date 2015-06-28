@@ -140,6 +140,7 @@ module WebRebellion; class App < Sinatra::Application
 
   def full_game_private_info(game, player)
     {
+      my_username: player.user.username,
       my_cards: card_info(player, show_secrets: true),
       my_choices: game.choice_explanations(player.user),
     }
