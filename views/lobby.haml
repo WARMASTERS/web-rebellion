@@ -16,6 +16,13 @@
     .form-group
       %button.btn.btn-primary{type: "submit"} Propose Game
 
+  #proposals{"ng-repeat" => "proposal in [currentProposal, lastProposal] track by $index"}
+    %div{"ng-if" => "proposal"}
+      [{{ formatTime(proposal.time) }}] {{ proposal.initiator }} suggests {{ proposal.original_players.join(', ') }} play a game
+      using roles {{ proposal.roles.join(', ') }}.
+      %div{"ng-repeat" => "(decliner, time) in proposal.declined_players"} [{{ formatTime(time) }}] {{ decliner }} declines.
+      %div{"ng-repeat" => "(acceptor, time) in proposal.accepted_players"} [{{ formatTime(time) }}] {{ acceptor }} accepts.
+
   %table.table.table-striped
     %thead
       %tr
