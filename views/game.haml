@@ -1,4 +1,9 @@
 #game.container{role: "main", "ng-controller" => "GameController"}
+  .alert.alert-danger{role: "alert", "ng-if" => 'disconnectedBy'}
+    %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
+    %span.sr-only Error:
+    You've been disconnected by {{ disconnectedBy }}
+
   #chat
     %div{"ng-repeat" => "message in messages"}
       {{ message.user }}: {{ message.message }}
