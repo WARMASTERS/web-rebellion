@@ -30,6 +30,10 @@ module WebRebellion; class Proposal
     @players.each_key { |k| @players[k] = false }
   end
 
+  def players
+    @players.keys
+  end
+
   def accepted_players
     @players.to_a.select(&:last).map { |p, t| [p.username, t] }.to_h
   end

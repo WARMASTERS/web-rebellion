@@ -164,9 +164,23 @@ module WebRebellion; class App < Sinatra::Application
   post '/proposals/decline' do
     halt 400, "No proposal" unless current_proposal
 
-    # Remove myself from proposal
-    # Notify all other players
-    # If only 1 player is left on proposal, remove that player from it too
+    # Save this because after declining I don't have a current_proposal anymore
+    proposal = current_proposal
+
+    proposal.decline(current_user)
+    current_user.proposal = nil
+
+    # Notify all players, including myself, so we see the decline
+    send_event(proposal.players + [current_user], 'proposal.update', JSON.dump(proposal.serialize))
+
+    # Send UI update removing the proposal from myself so I don't see buttons anymore
+    send_event([current_user], 'proposal.new', 'null')
+
+    # If too few players are left on proposal, remove remaining players too
+    if proposal.players.size < RebellionG54::Game::MIN_PLAYERS
+      send_event(proposal.players, 'proposal.new', 'null')
+      proposal.players.each { |p| p.proposal = nil }
+    end
 
     204
   end
