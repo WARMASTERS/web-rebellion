@@ -38,6 +38,8 @@
         %td
           {{ choice.available ? choice.description : choice.why_unavailable }}
 
+    %button.btn.btn-danger{"ng-if" => "game.winner || !game.my_username", "ng-click" => "leaveGame()"} Leave Game
+
   #gamePlayers
     %table.table.table-condensed
       %tr

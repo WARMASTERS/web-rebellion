@@ -39,7 +39,7 @@ app.controller('BaseController', function($http, $scope) {
   }
 });
 
-app.controller('GameController', function($controller, $http, $scope) {
+app.controller('GameController', function($controller, $http, $scope, $window) {
   $controller('BaseController', {$scope: $scope});
   // These just so we don't err on a formatDecision immediately.
   $scope.game = {
@@ -113,6 +113,13 @@ app.controller('GameController', function($controller, $http, $scope) {
       $scope.resetChoice();
     }).error(function(data, status, headers, config) {
       $scope.choiceError = data;
+    });
+  }
+
+  $scope.leaveGame = function() {
+    $scope.choiceError = null;
+    $http.post('/game/leave').success(function(data, status, headers, config) {
+      $window.location.href = '/games';
     });
   }
 

@@ -331,6 +331,19 @@ module WebRebellion; class App < Sinatra::Application
     204
   end
 
+  post '/game/leave' do
+    game = current_game
+    halt 400, 'no game' unless game
+
+    in_game = game.find_player(current_user)
+    halt 400, 'cannot leave game in progress' if in_game && !game.winner
+
+    current_user.game = nil
+    update_lobby_users
+
+    redirect '/games'
+  end
+
   get '/game.json', provides: 'application/json' do
     game = current_game
     halt '{}' unless game
