@@ -30,6 +30,10 @@ module WebRebellion; class App < Sinatra::Application
     end
   end
 
+  def lobby_users
+    settings.users_by_id.values.reject(&:game)
+  end
+
   def current_user
     settings.users_by_id[session[:user_id]]
   end
@@ -323,7 +327,7 @@ module WebRebellion; class App < Sinatra::Application
 
   post '/chat' do
     g = current_game
-    target_players = g ? g.users : settings.users_by_id.values.reject(&:game)
+    target_players = g ? g.users : lobby_users
 
     json = JSON.dump({user: current_username, message: json_body['message'], time: Time.now.to_i})
     send_event(target_players, 'chat', json)
