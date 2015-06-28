@@ -42,7 +42,10 @@ module WebRebellion; class App < Sinatra::Application
     pass if request.path_info.split('/')[1] == 'js'
     pass if request.path_info.split('/') == ['', 'login']
 
-    halt haml :login, locals: {failed: false, username: ''} unless current_user
+    unless current_user
+      session[:user_id] = nil
+      halt haml :login, locals: {failed: false, username: ''}
+    end
   end
 
   def json_body
