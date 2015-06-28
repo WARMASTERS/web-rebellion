@@ -99,6 +99,14 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
     });
   }
 
+  var onProposalError = function(event) {
+    $scope.$apply(function() {
+      $scope.proposalError = event.data;
+      $scope.lastProposal = $scope.currentProposal;
+      $scope.currentProposal = null;
+    });
+  }
+
   var onUpdateProposal = function(event) {
     $scope.$apply(function() {
       $scope.currentProposal = JSON.parse(event.data);
@@ -114,5 +122,6 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   es.addEventListener('disconnect', $scope.disconnected, false);
   es.addEventListener('game.start', onStartGame, false);
   es.addEventListener('proposal.new', onNewProposal, false);
+  es.addEventListener('proposal.error', onProposalError, false);
   es.addEventListener('proposal.update', onUpdateProposal, false);
 });

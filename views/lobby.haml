@@ -18,6 +18,11 @@
     .form-group
       %button.btn.btn-primary{type: "submit"} Propose Game
 
+  .alert.alert-danger{role: "alert", "ng-if" => 'proposalError'}
+    %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
+    %span.sr-only Error:
+    The game could not be started because {{ proposalError }}
+
   #proposals{"ng-repeat" => "proposal in [currentProposal, lastProposal] track by $index"}
     %div{"ng-if" => "proposal"}
       [{{ formatTime(proposal.time) }}] {{ proposal.initiator }} suggests {{ proposal.original_players.join(', ') }} play a game
