@@ -20,3 +20,13 @@
         %td {{ game.usernames.join(', ') }}
         %td
           -# TODO: Watch game
+
+  #chat
+    %div{"ng-repeat" => "message in messages"}
+      {{ message.user }}: {{ message.message }}
+
+  %form#chatform.form-inline{"ng-submit" => "sendChat(msg)"}
+    .form-group
+      %input#msg.form-control{placeholder: "type message here", "ng-model" => "msg"}
+    .form-group
+      %button.btn.btn-default{type: "submit"} Send Message

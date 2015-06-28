@@ -153,13 +153,13 @@ module WebRebellion; class App < Sinatra::Application
 
   post '/chat' do
     g = current_game
-    if g
-      json = JSON.dump({user: current_username, message: json_body['message']})
-      g.each_player { |player|
-        player.event_stream << "event: chat\n"
-        player.event_stream << "data: #{json}\n\n"
-      }
-    end
+    target_players = g ? g.users : settings.users_by_id.values.reject(&:game)
+
+    json = JSON.dump({user: current_username, message: json_body['message']})
+    target_players.each { |player|
+      player.event_stream << "event: chat\n"
+      player.event_stream << "data: #{json}\n\n"
+    }
     204
   end
 
