@@ -10,9 +10,11 @@
       %span.label{"ng-repeat" => "user in users",
       "ng-class" => "selectedUsernames.indexOf(user.username) != -1 ? 'label-success' : 'label-default'"}
         %input{id: "user{{ $index }}", name: "user[]", type: "checkbox",
+        "ng-if" => "user.username != myUsername",
         "ng-checked" => "selectedUsernames.indexOf(user.username) != -1",
         "ng-click" => "toggleUserSelect(user.username)"}
         %label{for: "user{{ $index }}"} {{ user.username }}
+        %span{"ng-if" => "user.username == myUsername"} (You!)
     .form-group
       %button.btn.btn-primary{type: "submit"} Propose Game
 

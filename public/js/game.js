@@ -52,8 +52,10 @@ app.controller('LobbyController', function($controller, $http, $scope) {
   $scope.selectedUsernames = [];
   $scope.currentProposal = null;
   $scope.lastProposal = null;
+  $scope.myUsername = null;
 
   $http.get('/games.json').success(function(data, status, headers, config) {
+    $scope.myUsername = data.username;
     $scope.users = data.users;
     $scope.currentProposal = data.proposal;
   });
