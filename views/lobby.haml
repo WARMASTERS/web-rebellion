@@ -24,6 +24,10 @@
       using roles {{ proposal.roles.join(', ') }}.
       %div{"ng-repeat" => "(decliner, time) in proposal.declined_players"} [{{ formatTime(time) }}] {{ decliner }} declines.
       %div{"ng-repeat" => "(acceptor, time) in proposal.accepted_players"} [{{ formatTime(time) }}] {{ acceptor }} accepts.
+      %div{"ng-if" => "$index == 0"}
+        Would you like to play this game with {{ proposal.players.join(', ') }}?
+        %button.btn.btn-primary{"ng-click" => "acceptProposal()"} Accept
+        %button.btn.btn-danger{"ng-click" => "declineProposal()"} Decline
 
   %table.table.table-striped
     %thead

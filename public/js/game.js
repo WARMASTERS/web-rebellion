@@ -80,6 +80,14 @@ app.controller('LobbyController', function($controller, $http, $scope) {
     });
   }
 
+  $scope.acceptProposal = function() {
+    $http.post('/proposals/accept');
+  }
+
+  $scope.declineProposal = function() {
+    $http.post('/proposals/decline');
+  }
+
   var onNewProposal = function(event) {
     $scope.$apply(function() {
       if ($scope.currentProposal !== null) {
