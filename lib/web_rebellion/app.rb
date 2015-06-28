@@ -95,6 +95,11 @@ module WebRebellion; class App < Sinatra::Application
     }
   end
 
+  def update_lobby_users
+    payload = JSON.dump(settings.users_by_id.values.map(&:serialize))
+    send_event(lobby_users, 'users.update', payload)
+  end
+
   def full_game_public_info(game, show_secrets: false)
     role_tokens = game.role_tokens
     roles = game.roles.map { |r| [r, {
@@ -162,6 +167,7 @@ module WebRebellion; class App < Sinatra::Application
       settings.users_by_id[u.id] = u
       session[:user_id] = u.id
     end
+    update_lobby_users
     redirect '/'
   end
 
@@ -211,6 +217,7 @@ module WebRebellion; class App < Sinatra::Application
       proposal = Proposal.new(current_user, eligible_users, roles)
       eligible_users.each { |eu| eu.proposal = proposal }
       send_event(eligible_users, 'proposal.new', JSON.dump(proposal.serialize))
+      update_lobby_users
     end
 
     204
@@ -238,6 +245,7 @@ module WebRebellion; class App < Sinatra::Application
       settings.games[game.id] = game
       if success
         send_event(proposal.players, 'game.start', JSON.dump(proposal.serialize))
+        update_lobby_users
       else
         send_event([proposal.players], 'proposal.error', error)
         proposal.players.each { |p| p.game = nil }
@@ -269,6 +277,8 @@ module WebRebellion; class App < Sinatra::Application
       send_event(proposal.players, 'proposal.new', 'null')
       proposal.players.each { |p| p.proposal = nil }
     end
+
+    update_lobby_users
 
     204
   end

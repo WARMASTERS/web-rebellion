@@ -164,6 +164,12 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
     });
   }
 
+  var onUpdateUsers = function(event) {
+    $scope.$apply(function() {
+      $scope.users = JSON.parse(event.data);
+    });
+  }
+
   var onStartGame = function(event) {
     $window.location.href = '/game';
   }
@@ -175,4 +181,5 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   es.addEventListener('proposal.new', onNewProposal, false);
   es.addEventListener('proposal.error', onProposalError, false);
   es.addEventListener('proposal.update', onUpdateProposal, false);
+  es.addEventListener('users.update', onUpdateUsers, false);
 });
