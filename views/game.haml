@@ -6,7 +6,7 @@
 
   #chat
     %div{"ng-repeat" => "message in messages"}
-      {{ message.user }}: {{ message.message }}
+      [{{ formatTime(message.time) }}] {{ message.user }}: {{ message.message }}
 
   %form#chatform.form-inline{"ng-submit" => "sendChat(msg)"}
     .form-group

@@ -183,7 +183,7 @@ module WebRebellion; class App < Sinatra::Application
     g = current_game
     target_players = g ? g.users : settings.users_by_id.values.reject(&:game)
 
-    json = JSON.dump({user: current_username, message: json_body['message']})
+    json = JSON.dump({user: current_username, message: json_body['message'], time: Time.now.to_i})
     send_event(target_players, 'chat', json)
     204
   end

@@ -4,6 +4,23 @@ app.controller('BaseController', function($http, $scope) {
   $scope.messages = [];
   $scope.disconnectedBy = null;
 
+  $scope.formatTime = function(unixtime) {
+    var date = new Date(unixtime * 1000);
+    var hours = date.getHours();
+    if (hours < 10) {
+      hours = "0" + hours;
+    }
+    var mins = date.getMinutes();
+    if (mins < 10) {
+      mins = "0" + mins;
+    }
+    var seconds = date.getSeconds();
+    if (seconds < 10) {
+      seconds = "0" + seconds;
+    }
+    return hours + ":" + mins + ":" + seconds;
+  }
+
   $scope.sendChat = function(message) {
     $http.post('/chat', {message: message});
     $scope.msg = '';

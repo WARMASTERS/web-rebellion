@@ -28,14 +28,14 @@
         %td{colspan: 3} No games!
       %tr{"ng-repeat" => "game in games"}
         %td {{ game.id }}
-        %td {{ game.start_time }}
+        %td {{ formatTime(game.start_time) }}
         %td {{ game.usernames.join(', ') }}
         %td
           -# TODO: Watch game
 
   #chat
     %div{"ng-repeat" => "message in messages"}
-      {{ message.user }}: {{ message.message }}
+      [{{ formatTime(message.time) }}] {{ message.user }}: {{ message.message }}
 
   %form#chatform.form-inline{"ng-submit" => "sendChat(msg)"}
     .form-group
