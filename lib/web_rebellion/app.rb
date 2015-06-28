@@ -71,6 +71,15 @@ module WebRebellion; class App < Sinatra::Application
     settings.games.values.map { |g| serialize_game(g) }
   end
 
+  def send_event(users, type, data)
+    users.each { |u|
+      stream = u.event_stream
+      next unless stream
+      stream << "event: #{type}\n"
+      stream << "data: #{data}\n\n"
+    }
+  end
+
   post '/login' do
     username_down = params[:username].downcase
     existing_user = settings.users_by_username[username_down]
@@ -156,20 +165,14 @@ module WebRebellion; class App < Sinatra::Application
     target_players = g ? g.users : settings.users_by_id.values.reject(&:game)
 
     json = JSON.dump({user: current_username, message: json_body['message']})
-    target_players.each { |player|
-      player.event_stream << "event: chat\n"
-      player.event_stream << "data: #{json}\n\n"
-    }
+    send_event(target_players, 'chat', json)
     204
   end
 
   get '/stream', provides: 'text/event-stream' do
     stream(:keep_open) do |out|
       # One stream per player, please.
-      if current_stream
-        current_stream << "event: disconnect\n"
-        current_stream << "data: #{request.ip}\n\n"
-      end
+      send_event([current_user], 'disconnect', request.ip)
       current_user.event_stream = out
       out.callback { current_user.event_stream = nil if current_stream == out }
     end
