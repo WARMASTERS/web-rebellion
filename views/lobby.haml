@@ -24,7 +24,7 @@
           "ng-click" => "toggleRoleSelect('#{role}')"}
           %label{for: "role-#{role}"}= role
     .form-group
-      %button.btn.btn-primary{type: "submit"} Propose Game
+      %input.btn.btn-primary{type: "submit", value: "Propose Game", "ng-disabled" => "!proposalValid()"}
 
   .alert.alert-danger{role: "alert", "ng-if" => 'proposalError'}
     %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
