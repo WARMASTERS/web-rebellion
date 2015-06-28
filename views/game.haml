@@ -8,6 +8,41 @@
     %div{"ng-repeat" => "message in gameMessages"}
       [{{ formatTime(message.time) }}] {{ message.message }}
 
+  #currentStatus
+    .turn Current turn: {{ game.turn }}
+    .decision {{ formatDecision(game) }}
+
+  #gamePlayers
+    %table.table.table-condensed
+      %tr
+        %th Name
+        %th Coins
+        %th Cards
+        %th Tokens
+      %tr{"ng-repeat" => "player in game.players"}
+        %td
+          {{ player.username }}
+        %td {{ player.coins }}
+        %td
+          %span.label.label-default{"ng-repeat" => "card in player.cards"}
+            {{ card.role || "Unknown" }}
+            {{ card.claimed_role ? "(Claimed " + card.claimed_role + ")" : "" }}
+        %td
+          %span.label.label-default{"ng-repeat" => "token in player.tokens"}
+            {{ token }}
+
+  %h1 My cards
+  #gameMyCards
+    %span.label.label-default{"ng-repeat" => "card in game.my_cards"}
+      {{ card.role }}
+
+  %h1 Roles
+  #gameRoles
+    %span.label.label-default{"ng-repeat" => "(role, info) in game.roles"}
+      {{ role }}
+      {{ info.tokens.join(', ') }}
+
+  %h1 Chat
   #chat
     %div{"ng-repeat" => "message in messages"}
       [{{ formatTime(message.time) }}] {{ message.user }}: {{ message.message }}
@@ -17,3 +52,5 @@
       %input#msg.form-control{placeholder: "type message here", "ng-model" => "msg"}
     .form-group
       %button.btn.btn-default{type: "submit"} Send Message
+
+  %span Game {{ game.id }} started {{ formatTime(game.start_time) }}

@@ -41,12 +41,21 @@ app.controller('BaseController', function($http, $scope) {
 
 app.controller('GameController', function($controller, $http, $scope) {
   $controller('BaseController', {$scope: $scope});
-  $scope.game = {};
+  // These just so we don't err on a formatDecision immediately.
+  $scope.game = {
+    decision_makers: [],
+    decision_choices: [],
+  };
   $scope.gameMessages = [];
 
   $http.get('/game.json').success(function(data, status, headers, config) {
     $scope.game = data;
   });
+
+  $scope.formatDecision = function(game) {
+    return game.decision + " - Waiting on " + game.decision_makers.join(', ') +
+      " to choose between " + game.decision_choices.join(', ');
+  }
 
   var onGameMessage = function(event) {
     $scope.$apply(function() {
