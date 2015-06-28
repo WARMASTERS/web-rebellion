@@ -4,6 +4,7 @@ require 'securerandom'
 require 'sinatra/base'
 require 'time'
 require 'tilt/haml'
+require_relative 'user'
 
 module WebRebellion; class App < Sinatra::Application
 
@@ -14,31 +15,27 @@ module WebRebellion; class App < Sinatra::Application
   # keyed by game id
   set game_connections: Hash.new { |h, k| h[k] = [] }
 
-  set users: {}
+  set users_by_id: {}
+  set users_by_username: {}
 
   # keyed by id
   set games: {}
-  # keyed by username
-  set user_games: {}
 
   # keyed by game id
   set game_passwords: {}
 
-  # keyed by username downcased
-  set user_passwords: {}
-
   helpers do
     def current_username
-      session[:username]
+      current_user && current_user.name
     end
   end
 
   def current_user
-    settings.users[current_username.downcase]
+    settings.users_by_id[session[:user_id]]
   end
 
   def current_game
-    settings.user_games[current_user]
+    current_user.game
   end
 
   before do
@@ -75,30 +72,35 @@ module WebRebellion; class App < Sinatra::Application
   def join_game(game)
     success = game.add_player(current_username)
     return false unless success
-    settings.user_games[current_user] = game
+    current_user.game = game
     true
   end
 
   def leave_game(game)
     success = game.remove_player(current_username)
     return false unless success
-    settings.user_games.delete(current_user)
+    current_user.game = nil
     settings.games.delete(game.id) if game.size == 0
     true
   end
 
   post '/login' do
     username_down = params[:username].downcase
-    if (password = settings.user_passwords[username_down]) && params[:password] != password
-      halt haml :login, locals: {failed: true, username: params[:username]}
+    existing_user = settings.users_by_username[username_down]
+    if existing_user
+      halt haml :login, locals: {failed: true, username: params[:username]} unless existing_user.try_password(params[:password])
+      session[:user_id] = existing_user.id
+    else
+      u = User.new(params[:username], params[:password])
+      settings.users_by_username[username_down] = u
+      settings.users_by_id[u.id] = u
+      session[:user_id] = u.id
     end
-    settings.user_passwords[username_down] = params[:password]
-    session[:username] = params[:username]
     redirect '/'
   end
 
   get '/logout' do
-    session[:username] = nil
+    session[:user_id] = nil
     redirect '/'
   end
 
