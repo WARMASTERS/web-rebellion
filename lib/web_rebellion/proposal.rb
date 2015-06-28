@@ -2,6 +2,7 @@ require 'time'
 
 module WebRebellion; class Proposal
   attr_reader :initiator
+  attr_reader :roles
 
   def initialize(initiator, players, roles)
     @initiator = initiator

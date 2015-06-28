@@ -154,9 +154,29 @@ module WebRebellion; class App < Sinatra::Application
     halt 400, "No proposal" unless current_proposal
 
     # Do nothing if I've already accepted
-    # Set myself to accepted
-    # If everyone has accepted, start the game
-    # Nofify other players
+    success = current_proposal.accept(current_user)
+    halt 204 unless success
+
+    proposal = current_proposal
+    if current_proposal.everyone_accepted?
+      game = RebellionG54::Game.new(proposal.initiator.username)
+      game.roles = proposal.roles
+      proposal.players.each { |p|
+        p.proposal = nil
+        p.game = game
+        game.add_player(p)
+      }
+      success, error = game.start_game
+      settings.games[game.id] = game
+      if success
+        send_event(proposal.players, 'game.start', JSON.dump(proposal.serialize))
+      else
+        send_event([proposal.players], 'proposal.error', error)
+        proposal.players.each { |p| p.game = nil }
+      end
+    else
+      send_event(proposal.players, 'proposal.update', JSON.dump(proposal.serialize))
+    end
 
     204
   end
