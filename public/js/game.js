@@ -46,7 +46,7 @@ app.controller('GameController', function($controller, $http, $scope) {
   es.addEventListener('disconnect', $scope.disconnected, false);
 });
 
-app.controller('LobbyController', function($controller, $http, $scope) {
+app.controller('LobbyController', function($controller, $http, $scope, $window) {
   $controller('BaseController', {$scope: $scope});
   $scope.users = [];
   $scope.selectedUsernames = [];
@@ -105,9 +105,14 @@ app.controller('LobbyController', function($controller, $http, $scope) {
     });
   }
 
+  var onStartGame = function(event) {
+    $window.location.href = '/game';
+  }
+
   var es = new EventSource('/stream');
   es.addEventListener('chat', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
+  es.addEventListener('game.start', onStartGame, false);
   es.addEventListener('proposal.new', onNewProposal, false);
   es.addEventListener('proposal.update', onUpdateProposal, false);
 });
