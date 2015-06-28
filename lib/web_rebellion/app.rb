@@ -372,6 +372,8 @@ module WebRebellion; class App < Sinatra::Application
     g = current_game
     target_players = g ? (g.users | g.watchers): lobby_users
 
+    halt 400, 'game in progress, do not disturb' if g && !g.find_player(current_user) && !g.winner
+
     json = JSON.dump({user: current_username, message: json_body['message'], time: Time.now.to_i})
     send_event(target_players, 'chat.' + (g ? 'game' : 'lobby'), json)
     204

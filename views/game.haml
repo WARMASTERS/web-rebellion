@@ -81,6 +81,6 @@
     .form-group
       %input#msg.form-control{placeholder: "type message here", "ng-model" => "msg"}
     .form-group
-      %button.btn.btn-default{type: "submit"} Send Message
+      %button.btn.btn-default{"ng-disabled" => "!game.winner && !game.my_username", type: "submit"} Send Message
 
   %span Game {{ game.id }} started {{ formatTime(game.start_time) }}
