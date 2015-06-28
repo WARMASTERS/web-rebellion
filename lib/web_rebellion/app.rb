@@ -90,6 +90,61 @@ module WebRebellion; class App < Sinatra::Application
     }
   end
 
+  def full_game_public_info(game, show_secrets: false)
+    role_tokens = game.role_tokens
+    roles = game.roles.map { |r| [r, {
+      tokens: role_tokens[r] || [],
+    }]}.to_h
+    player_tokens = game.player_tokens
+    # This must be an array, since ordering is important.
+    player_info = game.each_player.map { |p|
+      player_info(p, player_tokens, show_secrets: show_secrets).merge(alive: true)
+    }
+    player_info.concat(game.each_dead_player.map { |p|
+      player_info(p, player_tokens, show_secrets: show_secrets).merge(alive: false)
+    })
+
+    choice_names = game.choice_names
+
+    {
+      start_time: game.start_time.to_i,
+      id: game.id,
+      turn: game.turn_number,
+      roles: roles,
+      players: player_info,
+      decision: game.decision_description,
+      decision_makers: choice_names.keys.map(&:username),
+      decision_choices: choice_names.values.flatten.uniq,
+    }
+  end
+
+  def player_info(player, player_tokens, show_secrets: false)
+    {
+      username: player.user.username,
+      coins: player.coins,
+      tokens: player_tokens[player.user] || [],
+      cards: card_info(player, show_secrets: show_secrets),
+    }
+  end
+
+  def full_game_private_info(game, player)
+    {
+      my_cards: card_info(player, show_secrets: true),
+      my_choices: game.choice_explanations(player.user),
+    }
+  end
+
+  def card_info(player, show_secrets: false)
+    cards = []
+    cards.concat(player.each_live_card.map { |card| { role: show_secrets ? card.role : nil }})
+    cards.concat(player.each_side_card.map { |card, claimed_role| {
+      role: show_secrets ? card.role : nil,
+      claimed_role: claimed_role,
+    }})
+    cards.concat(player.each_revealed_card.map { |card| { role: card.role }})
+    cards
+  end
+
   post '/login' do
     username_down = params[:username].downcase
     existing_user = settings.users_by_username[username_down]
@@ -217,6 +272,14 @@ module WebRebellion; class App < Sinatra::Application
     else
       redirect '/games'
     end
+  end
+
+  get '/game.json', provides: 'application/json' do
+    game = current_game
+    halt '{}' unless game
+    public_info = full_game_public_info(game)
+    private_info = full_game_private_info(game, game.find_player(current_user))
+    JSON.dump(public_info.merge(private_info))
   end
 
   post '/chat' do
