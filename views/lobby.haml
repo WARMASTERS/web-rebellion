@@ -12,6 +12,7 @@
         %input{id: "user{{ $index }}", name: "user[]", type: "checkbox",
         "ng-if" => "user.username != myUsername",
         "ng-checked" => "selectedUsernames.indexOf(user.username) != -1",
+        "ng-disabled" => "user.in_proposal || user.in_game",
         "ng-click" => "toggleUserSelect(user.username)"}
         %label{for: "user{{ $index }}"} {{ user.username }}
         %span{"ng-if" => "user.username == myUsername"} (You!)
