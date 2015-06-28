@@ -4,6 +4,7 @@ require 'securerandom'
 require 'sinatra/base'
 require 'time'
 require 'tilt/haml'
+require_relative 'proposal'
 require_relative 'user'
 
 module WebRebellion; class App < Sinatra::Application
@@ -37,6 +38,10 @@ module WebRebellion; class App < Sinatra::Application
 
   def current_stream
     current_user.event_stream
+  end
+
+  def user_from_param(param)
+    settings.users_by_username[param.downcase]
   end
 
   before do
@@ -123,10 +128,24 @@ module WebRebellion; class App < Sinatra::Application
     redirect '/game' if current_game
     redirect '/games' if current_proposal
 
-    # Create Proposal
-    # Set all players' proposals to be this proposal
-    # (skip if they are in a game or proposal)
-    # Notify the players.
+    body = json_body
+
+    users = body['users'].map { |u| user_from_param(u) }.compact
+    # You can't be proposed to if you're in a game or proposal
+    eligible_users = users.reject { |u| u.proposal || u.game }
+    eligible_users << current_user
+    eligible_users.uniq!
+
+    # TODO: roles
+    roles = [:director, :banker, :guerrilla, :politician, :peacekeeper]
+
+    size_ok = (RebellionG54::Game::MIN_PLAYERS..RebellionG54::Game::MAX_PLAYERS).include?(eligible_users.size)
+
+    if size_ok && roles.size == RebellionG54::Game::ROLES_PER_GAME
+      proposal = Proposal.new(current_user, eligible_users, roles)
+      eligible_users.each { |eu| eu.proposal = proposal }
+      send_event(eligible_users, 'proposal.new', JSON.dump(proposal.serialize))
+    end
 
     204
   end

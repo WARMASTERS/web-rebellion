@@ -52,10 +52,18 @@ app.controller('LobbyController', function($controller, $http, $scope) {
   }
 
   $scope.submitProposal = function() {
-    console.log($scope.selectedUsernames);
+    $http.post('/proposals', {
+      users: $scope.selectedUsernames,
+      // TODO: roles
+    });
+  }
+
+  var onNewProposal = function(event) {
+    console.log(event.data);
   }
 
   var es = new EventSource('/stream');
   es.addEventListener('chat', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
+  es.addEventListener('proposal.new', onNewProposal, false);
 });
