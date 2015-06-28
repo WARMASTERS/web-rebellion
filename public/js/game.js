@@ -18,24 +18,5 @@ app.controller('GameController', function($http, $scope) {
   es.addEventListener('chat', receiveChat, false);
 });
 
-app.controller('LobbyController', function($http, $interval, $scope) {
-  $scope.games = [];
-
-  var updateGames = function(data, status, headers, config) {
-    $scope.games = data;
-  }
-  var gamesError = function(data, status, headers, config) {
-    console.log(response.data);
-  }
-
-  var showGames = function() {
-    $http.get('/games.json').success(updateGames).error(gamesError);
-  }
-
-  showGames();
-
-  var gamesInterval = $interval(showGames, 5000);
-  $scope.$on('$destroy', function() {
-    $interval.cancel(gamesIntervall);
-  })
+app.controller('LobbyController', function($http, $scope) {
 });

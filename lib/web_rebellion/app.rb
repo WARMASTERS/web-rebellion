@@ -18,11 +18,7 @@ module WebRebellion; class App < Sinatra::Application
   set users_by_id: {}
   set users_by_username: {}
 
-  # keyed by id
   set games: {}
-
-  # keyed by game id
-  set game_passwords: {}
 
   helpers do
     def current_username
@@ -36,6 +32,10 @@ module WebRebellion; class App < Sinatra::Application
 
   def current_game
     current_user.game
+  end
+
+  def current_proposal
+    current_user.proposal
   end
 
   before do
@@ -61,30 +61,13 @@ module WebRebellion; class App < Sinatra::Application
     # For lobby
     {
       id: game.id,
-      name: game.channel_name,
-      size: game.size,
-      in_progress: game.started?,
-      has_password: !settings.game_passwords[game.id].empty?
+      usernames: game.users.map(&:username),
+      start_time: game.start_time.to_i,
     }
   end
 
   def serialize_games
     settings.games.values.map { |g| serialize_game(g) }
-  end
-
-  def join_game(game)
-    success = game.add_player(current_username)
-    return false unless success
-    current_user.game = game
-    true
-  end
-
-  def leave_game(game)
-    success = game.remove_player(current_username)
-    return false unless success
-    current_user.game = nil
-    settings.games.delete(game.id) if game.size == 0
-    true
   end
 
   post '/login' do
@@ -114,47 +97,49 @@ module WebRebellion; class App < Sinatra::Application
 
   get '/games' do
     redirect '/game' if current_game
-    failed = params[:failed_join]
-    haml :lobby, locals: {failed: failed}
+    haml :lobby
   end
 
   get '/games.json', provides: 'application/json' do
-    JSON.dump(serialize_games)
+    JSON.dump({
+      username: current_username,
+      games: serialize_games,
+      users: settings.users_by_id.values.map(&:serialize),
+      proposal: current_proposal && current_proposal.serialize,
+    })
   end
 
-  post '/games' do
-    unless current_game
-      game = RebellionG54::Game.new(current_username)
-      settings.games[game.id] = game
-      settings.game_passwords[game.id] = params[:password].to_s
-      join_game(game)
-    end
-    redirect '/game'
+  post '/proposals' do
+    redirect '/game' if current_game
+    redirect '/games' if current_proposal
+
+    # Create Proposal
+    # Set all players' proposals to be this proposal
+    # (skip if they are in a game or proposal)
+    # Notify the players.
+
+    204
   end
 
-  post '/games/join' do
-    if current_game
-      redirect '/game'
-    else
-      game = settings.games[params[:game_id].to_i]
-      if game && params[:password].to_s == settings.game_passwords[game.id]
-        join_game(game)
-        redirect '/game'
-      else
-        redirect '/games?failed_join=true'
-      end
-    end
+  post '/proposals/accept' do
+    halt 400, "No proposal" unless current_proposal
+
+    # Do nothing if I've already accepted
+    # Set myself to accepted
+    # If everyone has accepted, start the game
+    # Nofify other players
+
+    204
   end
 
-  post '/games/leave' do
-    game = current_game
-    if game && game.started?
-      # Can't leave game in progress
-      redirect '/game'
-    else
-      leave_game(game) if game
-      redirect '/games'
-    end
+  post '/proposals/decline' do
+    halt 400, "No proposal" unless current_proposal
+
+    # Remove myself from proposal
+    # Notify all other players
+    # If only 1 player is left on proposal, remove that player from it too
+
+    204
   end
 
   get '/game' do

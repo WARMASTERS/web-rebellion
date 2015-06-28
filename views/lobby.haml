@@ -1,41 +1,17 @@
 #lobby.container{role: "main", "ng-controller" => "LobbyController"}
-  - if failed
-    %div.alert.alert-danger{role: "alert"}
-      %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
-      %span.sr-only Error:
-      Wrong password for that game
-
-  .page-header
-    %h1 Games
-
   %table.table.table-striped
     %thead
       %tr
         %th Game ID
-        %th Started by
+        %th Started
         %th Players
         %th
     %tbody
       %tr{"ng-if" => "games.length == 0"}
-        %td{colspan: 4} No games!
+        %td{colspan: 3} No games!
       %tr{"ng-repeat" => "game in games"}
         %td {{ game.id }}
-        %td {{ game.name }}
-        %td {{ game.size }}
+        %td {{ game.start_time }}
+        %td {{ game.usernames.join(', ') }}
         %td
-          %form.form-inline{action: "/games/join", method: "post", "ng-if" => "!game.in_progress"}
-            .form-group
-              %input.form-control{name: "password", type: "password", placeholder: "Password", "ng-if" => "game.has_password"}
-              %input{name: "game_id", type: "hidden", "ng-value" => "{{ game.id }}"}
-            .form-group
-              %button.btn.btn-default{type: "submit"} Join Game
-
-  .page-header
-    %h1 Create game
-
-  %form{action: "/games", method: "post"}
-    .form-group
-      %label{for: "password"} Password:
-      %input#password.form-control{name: "password", type: "password", placeholder: "Password"}
-    .form-group
-      %button.btn.btn-default{type: "submit"} Create Game
+          -# TODO: Watch game
