@@ -46,6 +46,7 @@
   #gamePlayers
     %table.table.table-condensed
       %tr
+        %th
         %th Name
         %th Coins
         %th Cards
@@ -53,7 +54,7 @@
       %tr{"ng-repeat" => "player in game.players"}
         %td
           %a{"ng-if" => "choiceToConfirm", "ng-click" => "addPlayerArg(player)"} {{ player.username }}
-          %span{"ng-if" => "!choiceToConfirm"} {{ player.username }}
+        %td {{ player.username }}
         %td {{ player.coins }}
         %td
           %span.label.label-default{"ng-repeat" => "card in player.cards"}
