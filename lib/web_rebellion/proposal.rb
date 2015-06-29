@@ -11,6 +11,9 @@ module WebRebellion; class Proposal
     @declined_players = {}
     @roles = roles.freeze
     @time = Time.now.to_i
+
+    # initiator auto-accepts own proposal
+    @players[initiator] = @time
   end
 
   def assert_in_game(player)
