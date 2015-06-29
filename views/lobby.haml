@@ -61,7 +61,7 @@
         %td
           %button.btn.btn-default{"ng-click" => "watchGame(game)"} Watch
 
-  #chat
+  #chat{"scroll-glue" => true}
     %div{"ng-repeat" => "message in messages"}
       [{{ formatTime(message.time) }}] {{ message.user }}: {{ message.message }}
 

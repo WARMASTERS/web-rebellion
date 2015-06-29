@@ -4,7 +4,7 @@
     %span.sr-only Error:
     You've been disconnected by {{ disconnectedBy }}
 
-  #gameMessages
+  #gameMessages{"scroll-glue" => true}
     %div{"ng-repeat" => "message in gameMessages"}
       [{{ formatTime(message.time) }}] {{ message.message }}
 
@@ -73,7 +73,7 @@
       {{ info.tokens.join(', ') }}
 
   %h1 Chat
-  #chat
+  #chat{"scroll-glue" => true}
     %div{"ng-repeat" => "message in messages"}
       [{{ formatTime(message.time) }}] {{ message.user }}: {{ message.message }}
 

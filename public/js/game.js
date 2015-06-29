@@ -1,4 +1,6 @@
-var app = angular.module('webRebellion', []);
+var app = angular.module('webRebellion', [
+  'luegg.directives',
+]);
 
 app.controller('BaseController', function($http, $scope) {
   $scope.messages = [];
