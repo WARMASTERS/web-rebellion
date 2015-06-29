@@ -57,7 +57,7 @@
         %th Tokens
       %tr{"ng-repeat" => "player in game.players"}
         %td
-          %a{"ng-if" => "needPlayerArg() && (player.username != game.my_username || canTargetSelf())",
+          %a{"ng-if" => "needPlayerArg() && player.alive && (player.username != game.my_username || canTargetSelf())",
           "ng-click" => "addPlayerArg(player)"} Pick {{ player.username }}
         %td {{ player.username }}
         %td {{ player.coins }}
