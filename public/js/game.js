@@ -95,10 +95,38 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
     return $scope.currentArg().type == 'role';
   }
 
+  var tryAutoChoice = function(label, choice) {
+    // Is there only one other target?
+    var onlyTarget = null;
+    var targetsFound = 0;
+    for (var i in $scope.game.players) {
+      var player = $scope.game.players[i];
+      if (!player.alive || player.username == $scope.game.my_username) {
+        continue;
+      }
+      onlyTarget = player;
+      ++targetsFound;
+      if (targetsFound > 1) {
+        // Give up now.
+        return;
+      }
+    }
+    if (targetsFound == 1) {
+      $scope.addPlayerArg(onlyTarget);
+    }
+  }
+
   $scope.makeChoice = function(label, choice) {
     if (choice.args.length > 0) {
       $scope.labelToConfirm = label;
       $scope.choiceToConfirm = choice;
+
+      // If this choice requires a single target,
+      // and it's not possible to choose myself,
+      // we may be able to auto-fill the target in a 2p game.
+      if (choice.args.length == 1 && $scope.game.num_living_players == 2 && !choice.args[0].self) {
+        tryAutoChoice(label, choice);
+      }
     } else {
       sendChoice(label, []);
     }

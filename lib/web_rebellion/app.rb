@@ -146,6 +146,7 @@ module WebRebellion; class App < Sinatra::Application
       id: game.id,
       turn: game.turn_number,
       roles: roles,
+      num_living_players: game.size,
       players: player_info,
       watchers: game.watchers.map(&:username),
       winner: game.winner && game.winner.username,
