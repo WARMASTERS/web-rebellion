@@ -25,6 +25,10 @@
           "ng-click" => "toggleRoleSelect('#{role}')"}
           %label{for: "role-#{role}"}= role
     .form-group
+      Random selection (One each from finance, communications, force, two from special interests):
+      %a.btn.btn-default{"ng-click" => "randomRoles(false)"} Basic only
+      %a.btn.btn-default{"ng-click" => "randomRoles(true)"} Advanced
+    .form-group
       %input.btn.btn-primary{type: "submit", value: "Propose Game", "ng-disabled" => "!proposalValid()"}
 
   .alert.alert-danger{role: "alert", "ng-if" => 'proposalError'}

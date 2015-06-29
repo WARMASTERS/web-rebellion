@@ -177,6 +177,25 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   $scope.lastProposal = null;
   $scope.myUsername = null;
 
+  var allRoles = {
+    finance: {
+      basic: ['banker', 'farmer', 'spy'],
+      advanced: ['speculator', 'capitalist'],
+    },
+    communications: {
+      basic: ['director', 'reporter', 'newscaster'],
+      advanced: ['writer', 'producer'],
+    },
+    force: {
+      basic: ['guerrilla', 'judge', 'general'],
+      advanced: ['mercenary', 'crime_boss'],
+    },
+    special_interests: {
+      basic: ['politician', 'lawyer', 'peacekeeper', 'intellectual'],
+      advanced: ['priest', 'communist', 'foreign_consular', 'customs_officer', 'protestor', 'missionary'],
+    },
+  }
+
   $http.get('/games.json').success(function(data, status, headers, config) {
     $scope.myUsername = data.username;
     $scope.users = data.users;
@@ -199,6 +218,43 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
 
   $scope.toggleRoleSelect = function(rolename) {
     toggleSelect($scope.selectedRoles, rolename);
+  }
+
+  // Fisher-Yates shuffle, Knuth shuffle
+  var shuffle = function(array) {
+    var i = array.length;
+
+    while (i > 0) {
+      // Swap random element with current element.
+      var rand = Math.floor(Math.random() * i);
+      i -= 1;
+      var tmp = array[i];
+      array[i] = array[rand];
+      array[rand] = tmp;
+    }
+
+    return array;
+  }
+
+  $scope.randomRoles = function(advanced) {
+    $scope.selectedRoles = [];
+    var categories = ['finance', 'communications', 'force'];
+    for (var i in categories) {
+      var category = allRoles[categories[i]];
+      var choices = advanced ? category.basic.concat(category.advanced) : category.basic;
+      var item = choices[Math.floor(Math.random() * choices.length)];
+      $scope.selectedRoles.push(item);
+    }
+
+    // Two from special interests
+    var category = allRoles.special_interests;
+    var choices = advanced ? category.basic.concat(category.advanced) : category.basic;
+    // This will shuffle allRoles.special_interests.basic if advanced == false but that's OK
+    // nothing else uses it or depends on its order.
+    shuffle(choices);
+    $scope.selectedRoles.push(choices[0]);
+    $scope.selectedRoles.push(choices[1]);
+    return false;
   }
 
   $scope.userAcceptedProposal = function(proposal) {
