@@ -1,19 +1,39 @@
 #login.container{role: "main"}
-  - if failed
+  - if err
     .alert.alert-danger{role: "alert"}
       %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
       %span.sr-only Error:
-      Wrong password for that user
+      = err
 
-  .page-header
-    %h1 Log in
+  .row
+    .col-sm-6
+      %h1.page_header Log in
 
-  %form{action: "/login", method: "post"}
-    .form-group
-      %label{for: "username"} Username:
-      %input.form-control{id: "username", name: "username", placeholder: "Username", value: username}
-    .form-group
-      %label{for: "password"} Password:
-      %input.form-control{id: "password", name: "password", type: "password"}
-    .form-group
-      %button.btn.btn-default{type: "submit"} Log In
+      %form{name: "loginForm", action: "/login", method: "post"}
+        .form-group
+          %label{for: "username"} Username:
+          %input.form-control{id: "username", name: "username", placeholder: "Username",
+            maxlength: 32, required: true, value: username, "ng-model" => "username"}
+        .form-group
+          %label{for: "password"} Password:
+          %input.form-control{id: "password", name: "password", placeholder: "Password", type: "password"}
+        .form-group
+          %button.btn.btn-default{"ng-disabled" => "loginForm.$invalid", type: "submit"} Log In
+    .col-sm-6
+      %h1.page_header Register
+
+      %p Blank passwords are allowed, but then anyone who knows you have a blank password can use your account. You've been warned.
+
+      %form{name: "registerForm", action: "/register", method: "post"}
+        .form-group
+          %label{for: "reg_username"} Username:
+          %input.form-control{id: "reg_username", name: "username", placeholder: "Username",
+            maxlength: 32, required: true, value: username, "ng-model" => "reg_username"}
+        .form-group
+          %label{for: "reg_password"} Password:
+          %input.form-control{id: "reg_password", name: "password", placeholder: "Password", type: "password"}
+        .form-group
+          %label{for: "reg_confirm_password"} Confirm Password:
+          %input.form-control{id: "reg_confirm_password", name: "confirm_password", placeholder: "Confirm Password", type: "password"}
+        .form-group
+          %button.btn.btn-default{"ng-disabled" => "registerForm.$invalid", type: "submit"} Register

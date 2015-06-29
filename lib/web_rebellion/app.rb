@@ -58,10 +58,11 @@ module WebRebellion; class App < Sinatra::Application
   before do
     pass if request.path_info.split('/')[1] == 'js'
     pass if request.path_info.split('/') == ['', 'login']
+    pass if request.path_info.split('/') == ['', 'register']
 
     unless current_user
       session[:user_id] = nil
-      halt haml :login, locals: {failed: false, username: ''}
+      halt haml :login, locals: {err: nil, username: ''}
     end
   end
 
@@ -170,20 +171,35 @@ module WebRebellion; class App < Sinatra::Application
     cards
   end
 
-  post '/login' do
+  post '/register' do
     username_down = params[:username].downcase
     existing_user = settings.users_by_username[username_down]
     if existing_user
-      halt haml :login, locals: {failed: true, username: params[:username]} unless existing_user.try_password(params[:password])
-      session[:user_id] = existing_user.id
+      haml :login, locals: {err: 'Username is taken', username: params[:username]}
+    elsif params[:password] != params[:confirm_password]
+      haml :login, locals: {err: 'Password and confirmation did not match', username: params[:username]}
     else
       u = User.new(params[:username], params[:password])
       settings.users_by_username[username_down] = u
       settings.users_by_id[u.id] = u
       session[:user_id] = u.id
+      update_lobby_users
+      redirect '/'
     end
-    update_lobby_users
-    redirect '/'
+  end
+
+  post '/login' do
+    username_down = params[:username].downcase
+    existing_user = settings.users_by_username[username_down]
+    if existing_user && existing_user.try_password(params[:password])
+      session[:user_id] = existing_user.id
+      update_lobby_users
+      redirect '/'
+    elsif existing_user
+      haml :login, locals: {err: 'Incorrect password', username: params[:username]}
+    else
+      haml :login, locals: {err: 'No such user', username: params[:username]}
+    end
   end
 
   get '/logout' do
