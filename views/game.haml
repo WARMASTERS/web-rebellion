@@ -9,8 +9,11 @@
       [{{ formatTime(message.time) }}] {{ message.message }}
 
   #currentStatus
-    .turn Current turn: {{ game.turn }}
-    .decision {{ formatDecision(game) }}
+    %div{"ng-if" => "game.winner"}
+      Congratulations! {{ game.winner }} is the winner!
+    %div{"ng-if" => "!game.winner"}
+      .turn Current turn: {{ game.turn }}
+      .decision {{ formatDecision(game) }}
 
     .alert.alert-danger{role: "alert", "ng-if" => 'choiceError'}
       %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
@@ -29,7 +32,7 @@
       %button.btn.btn-sm.btn-primary{"ng-click" => "confirmChoice()"} Confirm
       %button.btn.btn-sm.btn-danger{"ng-click" => "resetChoice()"} Cancel
 
-    %table.table.table-condensed{"ng-if" => "!choiceToConfirm"}
+    %table.table.table-condensed{"ng-if" => "!choiceToConfirm && !game.winner"}
       %tr{"ng-repeat" => "(label, choice) in game.my_choices"}
         %td{"ng-if" => "choice.available"}
           %button.btn.btn-sm.btn-primary{"ng-click" => "makeChoice(label, choice)"} {{ label }}
