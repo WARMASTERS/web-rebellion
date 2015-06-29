@@ -72,6 +72,17 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
     return $scope.choiceToConfirm.args[$scope.choiceArgs.length];
   }
 
+  $scope.formatArg = function(arg) {
+    var str = arg.type;
+    if (arg.richest) {
+      str += " (richest)";
+    }
+    if (arg.poorest) {
+      str += " (poorest)";
+    }
+    return str;
+  }
+
   $scope.needPlayerArg = function() {
     return $scope.currentArg().type == 'player';
   }
