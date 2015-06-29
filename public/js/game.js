@@ -194,6 +194,12 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
     return $scope.myUsername in proposal.accepted_players;
   }
 
+  $scope.watchGame = function(game) {
+    $http.post('/game/watch', {game_id: game.id}).success(function(data, status, headers, config) {
+      $window.location.href = '/game';
+    });
+  }
+
   $scope.proposalValid = function() {
     var usersOk = 1 <= $scope.selectedUsernames.length && $scope.selectedUsernames.length <= 5;
     var rolesOk = $scope.selectedRoles.length == 5;

@@ -59,7 +59,7 @@
         %td {{ formatTime(game.start_time) }}
         %td {{ game.usernames.join(', ') }}
         %td
-          -# TODO: Watch game
+          %button.btn.btn-default{"ng-click" => "watchGame(game)"} Watch
 
   #chat
     %div{"ng-repeat" => "message in messages"}

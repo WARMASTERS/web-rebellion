@@ -350,6 +350,15 @@ module WebRebellion; class App < Sinatra::Application
     204
   end
 
+  post '/game/watch' do
+    halt 400, 'finish your game first' if current_game
+    game = settings.games[json_body['game_id']]
+    halt 404, 'no such game' unless game
+
+    watch_game(game, current_user)
+    204
+  end
+
   post '/game/leave' do
     game = current_game
     halt 400, 'no game' unless game
