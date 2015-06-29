@@ -16,7 +16,7 @@ module WebRebellion; class App < Sinatra::Application
   set server: 'thin'
   set root: File.dirname(File.dirname(File.dirname(__FILE__)))
 
-  set users_by_id: {}
+  set active_users_by_id: {}
   set users_by_username: {}
 
   set games: {}
@@ -32,11 +32,11 @@ module WebRebellion; class App < Sinatra::Application
   end
 
   def lobby_users
-    settings.users_by_id.values.reject(&:game)
+    settings.active_users_by_id.values.reject(&:game)
   end
 
   def current_user
-    settings.users_by_id[session[:user_id]]
+    settings.active_users_by_id[session[:user_id]]
   end
 
   def current_game
@@ -100,7 +100,7 @@ module WebRebellion; class App < Sinatra::Application
   end
 
   def update_lobby_users
-    payload = JSON.dump(settings.users_by_id.values.map(&:serialize))
+    payload = JSON.dump(settings.active_users_by_id.values.map(&:serialize))
     send_event(lobby_users, 'users.update', payload)
   end
 
@@ -187,8 +187,8 @@ module WebRebellion; class App < Sinatra::Application
     else
       u = User.new(params[:username], params[:password])
       settings.users_by_username[username_down] = u
-      settings.users_by_id[u.id] = u
       session[:user_id] = u.id
+      settings.active_users_by_id[u.id] = u
       update_lobby_users
       redirect '/'
     end
@@ -199,6 +199,7 @@ module WebRebellion; class App < Sinatra::Application
     existing_user = settings.users_by_username[username_down]
     if existing_user && existing_user.try_password(params[:password])
       session[:user_id] = existing_user.id
+      settings.active_users_by_id[existing_user.id] = existing_user
       update_lobby_users
       redirect '/'
     elsif existing_user
@@ -209,6 +210,7 @@ module WebRebellion; class App < Sinatra::Application
   end
 
   get '/logout' do
+    settings.active_users_by_id.delete(current_user.id)
     session[:user_id] = nil
     redirect '/'
   end
@@ -227,7 +229,7 @@ module WebRebellion; class App < Sinatra::Application
     JSON.dump({
       username: current_username,
       games: serialize_games,
-      users: settings.users_by_id.values.map(&:serialize),
+      users: settings.active_users_by_id.values.map(&:serialize),
       proposal: current_proposal && current_proposal.serialize,
     })
   end
