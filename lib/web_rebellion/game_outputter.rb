@@ -7,6 +7,8 @@ module WebRebellion; class GameOutputter
   end
 
   def player_died(user)
+    # TODO: update lobby games to show that the user is no longer in the game?
+    # Maybe. But I'm not sure it's worth the bandwidth =D
     @app.watch_game(@game, user)
   end
 

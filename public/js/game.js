@@ -159,6 +159,7 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
 app.controller('LobbyController', function($controller, $http, $scope, $window) {
   $controller('BaseController', {$scope: $scope});
   $scope.users = [];
+  $scope.games = [];
   $scope.selectedUsernames = [];
   $scope.selectedRoles = ['banker', 'director', 'guerrilla', 'politician', 'peacekeeper'];
   $scope.currentProposal = null;
@@ -168,6 +169,7 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   $http.get('/games.json').success(function(data, status, headers, config) {
     $scope.myUsername = data.username;
     $scope.users = data.users;
+    $scope.games = data.games;
     $scope.currentProposal = data.proposal;
   });
 
@@ -238,6 +240,12 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
     });
   }
 
+  var onUpdateGames = function(event) {
+    $scope.$apply(function() {
+      $scope.games = JSON.parse(event.data);
+    });
+  }
+
   var onUpdateUsers = function(event) {
     $scope.$apply(function() {
       $scope.users = JSON.parse(event.data);
@@ -252,6 +260,7 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   es.addEventListener('chat.lobby', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
   es.addEventListener('game.start', onStartGame, false);
+  es.addEventListener('games.update', onUpdateGames, false);
   es.addEventListener('proposal.new', onNewProposal, false);
   es.addEventListener('proposal.error', onProposalError, false);
   es.addEventListener('proposal.update', onUpdateProposal, false);

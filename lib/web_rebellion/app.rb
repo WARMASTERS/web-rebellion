@@ -108,6 +108,11 @@ module WebRebellion; class App < Sinatra::Application
     send_event(lobby_users, 'users.update', payload)
   end
 
+  def update_lobby_games
+    payload = JSON.dump(serialize_games)
+    send_event(lobby_users, 'games.update', payload)
+  end
+
   def full_game_public_info(game, show_secrets: false)
     role_tokens = game.role_tokens
     roles = game.roles.map { |r| [r, {
@@ -256,6 +261,7 @@ module WebRebellion; class App < Sinatra::Application
       if success
         send_event(proposal.players, 'game.start', JSON.dump(proposal.serialize))
         update_lobby_users
+        update_lobby_games
       else
         send_event([proposal.players], 'proposal.error', error)
         proposal.players.each { |p| p.game = nil }
@@ -334,7 +340,10 @@ module WebRebellion; class App < Sinatra::Application
       stream << "data: #{JSON.dump(public_info.merge(private_info))}\n\n"
     }
 
-    settings.games.delete(game.id) if game.winner
+    if game.winner
+      settings.games.delete(game.id)
+      update_lobby_games
+    end
 
     send_event(game.watchers, 'game.update', JSON.dump(public_info))
 
