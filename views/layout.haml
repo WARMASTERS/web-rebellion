@@ -25,6 +25,10 @@
         %a.navbar-brand{href: "#"} Rebellion G54
       .navbar-collapse.collapse{"ng-class" => "{'in': !navCollapsed}"}
         %ul.nav.navbar-nav
+          %li
+            %a{href: "https://www.boardgamegeek.com/thread/1369434/"} Rules
+          %li
+            %a{href: "https://github.com/petertseng/web-rebellion"} Source
           - if current_username
             %li
               %a{href: "#"}= current_username
