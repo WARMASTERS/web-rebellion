@@ -60,7 +60,7 @@
           %span.label.label-default{"ng-repeat" => "token in player.tokens"}
             {{ token }}
 
-  %h1 My cards
+  %h1{"ng-if" => "game.my_cards"} My cards
   #gameMyCards
     %span.label.label-default{"ng-repeat" => "card in game.my_cards"}
       {{ card.role }}
