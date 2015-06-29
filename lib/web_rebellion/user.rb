@@ -25,6 +25,7 @@ class User
     @game = nil
     @event_stream = nil
     @last_seen = Time.now.to_i
+    @last_event_sent = 0
   end
 
   def try_password(password)
@@ -37,5 +38,12 @@ class User
       in_proposal: !!@proposal,
       in_game: !!@game,
     }
+  end
+
+  def send_event(type, data)
+    return false unless @event_stream
+    @event_stream << "event: #{type}\ndata: #{data}\n\n"
+    @last_event_sent = Time.now.to_i
+    true
   end
 end

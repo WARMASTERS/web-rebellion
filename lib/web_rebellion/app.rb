@@ -96,12 +96,7 @@ module WebRebellion; class App < Sinatra::Application
   end
 
   def send_event(users, type, data)
-    users.each { |u|
-      stream = u.event_stream
-      next unless stream
-      stream << "event: #{type}\n"
-      stream << "data: #{data}\n\n"
-    }
+    users.each { |u| u.send_event(type, data) }
   end
 
   def update_lobby_users
@@ -363,8 +358,7 @@ module WebRebellion; class App < Sinatra::Application
       stream = player.user.event_stream
       next unless stream
       private_info = full_game_private_info(game, player)
-      stream << "event: game.update\n"
-      stream << "data: #{JSON.dump(public_info.merge(private_info))}\n\n"
+      player.user.send_event('game.update', JSON.dump(public_info.merge(private_info)))
     }
 
     if game.winner
