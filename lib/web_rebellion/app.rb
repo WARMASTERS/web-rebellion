@@ -162,12 +162,19 @@ module WebRebellion; class App < Sinatra::Application
 
   def card_info(player, show_secrets: false)
     cards = []
-    cards.concat(player.each_live_card.map { |card| { role: show_secrets ? card.role : nil }})
+    cards.concat(player.each_live_card.map { |card| {
+      role: show_secrets ? card.role : nil,
+      hidden: true,
+    }})
     cards.concat(player.each_side_card.map { |card, claimed_role| {
       role: show_secrets ? card.role : nil,
       claimed_role: claimed_role,
+      hidden: true,
     }})
-    cards.concat(player.each_revealed_card.map { |card| { role: card.role }})
+    cards.concat(player.each_revealed_card.map { |card| {
+      role: card.role,
+      hidden: false,
+    }})
     cards
   end
 

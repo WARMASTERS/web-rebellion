@@ -67,6 +67,8 @@
   #gameMyCards
     %span.label.label-default{"ng-repeat" => "card in game.my_cards"}
       {{ card.role }}
+      {{ card.claimed_role ? "(Claimed " + card.claimed_role + ")" : "" }}
+      ({{ card.hidden ? 'Hidden' : 'Revealed' }})
 
   %h1 Roles
   #gameRoles
