@@ -65,6 +65,25 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
       " to choose between " + game.decision_choices.join(', ');
   }
 
+  $scope.currentArg = function() {
+    if (!$scope.choiceToConfirm || $scope.choiceArgs.length >= $scope.choiceToConfirm.args.length) {
+      return {};
+    }
+    return $scope.choiceToConfirm.args[$scope.choiceArgs.length];
+  }
+
+  $scope.needPlayerArg = function() {
+    return $scope.currentArg().type == 'player';
+  }
+
+  $scope.canTargetSelf = function() {
+    return $scope.currentArg().self;
+  }
+
+  $scope.needRoleArg = function() {
+    return $scope.currentArg().type == 'role';
+  }
+
   $scope.makeChoice = function(label, choice) {
     if (choice.args.length > 0) {
       $scope.labelToConfirm = label;

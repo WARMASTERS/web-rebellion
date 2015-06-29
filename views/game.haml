@@ -53,7 +53,8 @@
         %th Tokens
       %tr{"ng-repeat" => "player in game.players"}
         %td
-          %a{"ng-if" => "choiceToConfirm", "ng-click" => "addPlayerArg(player)"} {{ player.username }}
+          %a{"ng-if" => "needPlayerArg() && (player.username != game.my_username || canTargetSelf())",
+          "ng-click" => "addPlayerArg(player)"} Pick {{ player.username }}
         %td {{ player.username }}
         %td {{ player.coins }}
         %td
@@ -74,8 +75,8 @@
   %h1 Roles
   #gameRoles
     %span.label.label-default{"ng-repeat" => "(role, info) in game.roles"}
-      %a{"ng-if" => "choiceToConfirm", "ng-click" => "addRoleArg(role)"} {{ role }}
-      %span{"ng-if" => "!choiceToConfirm"} {{ role }}
+      %a{"ng-if" => "needRoleArg()", "ng-click" => "addRoleArg(role)"} {{ role }}
+      %span{"ng-if" => "!needRoleArg()"} {{ role }}
       {{ info.tokens.join(', ') }}
 
   %h1 Chat
