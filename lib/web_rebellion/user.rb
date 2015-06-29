@@ -13,6 +13,7 @@ class User
   @users_created = 0
 
   alias :name :username
+  alias :to_s :username
 
   def initialize(username, password)
     self.class.users_created += 1
