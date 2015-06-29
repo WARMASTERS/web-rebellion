@@ -176,6 +176,10 @@ module WebRebellion; class App < Sinatra::Application
     existing_user = settings.users_by_username[username_down]
     if existing_user
       haml :login, locals: {err: 'Username is taken', username: params[:username]}
+    elsif params[:username].gsub(/[[:space:]]/, '').empty?
+      haml :login, locals: {err: 'Username cannot be blank', username: ''}
+    elsif params[:username].size > 32
+      haml :login, locals: {err: 'Username cannot be logner than 32 characters', username: ''}
     elsif params[:password] != params[:confirm_password]
       haml :login, locals: {err: 'Password and confirmation did not match', username: params[:username]}
     else
