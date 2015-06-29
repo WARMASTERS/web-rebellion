@@ -104,6 +104,11 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
       return false;
     }
     $scope.choiceArgs.push({type: "player", value: player.username});
+
+    // Auto-send choice if all args have been given.
+    if ($scope.choiceArgs.length >= $scope.choiceToConfirm.args.length) {
+      sendChoice($scope.labelToConfirm, $scope.choiceArgs);
+    }
   }
 
   $scope.addRoleArg = function(role) {
@@ -111,6 +116,11 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
       return false;
     }
     $scope.choiceArgs.push({type: "role", value: role});
+
+    // Auto-send choice if all args have been given.
+    if ($scope.choiceArgs.length >= $scope.choiceToConfirm.args.length) {
+      sendChoice($scope.labelToConfirm, $scope.choiceArgs);
+    }
   }
 
   $scope.deleteArg = function() {
@@ -118,13 +128,6 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
       return false;
     }
     $scope.choiceArgs.pop();
-  }
-
-  $scope.confirmChoice = function() {
-    if (!$scope.choiceToConfirm) {
-      return false;
-    }
-    sendChoice($scope.labelToConfirm, $scope.choiceArgs);
   }
 
   var sendChoice = function(label, args) {

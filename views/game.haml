@@ -29,7 +29,6 @@
           {{ arg.type }}: {{ arg.value }}
           %a{"ng-if" => "$last", "ng-click" => "deleteArg()"} (x)
 
-      %button.btn.btn-sm.btn-primary{"ng-click" => "confirmChoice()"} Confirm
       %button.btn.btn-sm.btn-danger{"ng-click" => "resetChoice()"} Cancel
 
     %table.table.table-condensed{"ng-if" => "!choiceToConfirm && !game.winner"}
