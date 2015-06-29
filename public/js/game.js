@@ -66,7 +66,7 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
   }
 
   $scope.makeChoice = function(label, choice) {
-    if (choice.needs_args) {
+    if (choice.args.length > 0) {
       $scope.labelToConfirm = label;
       $scope.choiceToConfirm = choice;
     } else {
