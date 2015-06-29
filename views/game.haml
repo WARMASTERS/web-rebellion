@@ -27,7 +27,7 @@
         Current targets:
         %span{class: "label label-default", "ng-repeat" => "arg in choiceArgs"}
           {{ arg.type }}: {{ arg.value }}
-          %a{"ng-click" => "deleteArg($index)"} (x)
+          %a{"ng-if" => "$last", "ng-click" => "deleteArg()"} (x)
 
       %button.btn.btn-sm.btn-primary{"ng-click" => "confirmChoice()"} Confirm
       %button.btn.btn-sm.btn-danger{"ng-click" => "resetChoice()"} Cancel

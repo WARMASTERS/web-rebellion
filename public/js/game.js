@@ -113,11 +113,11 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
     $scope.choiceArgs.push({type: "role", value: role});
   }
 
-  $scope.deleteArg = function(idx) {
+  $scope.deleteArg = function() {
     if (!$scope.choiceToConfirm) {
       return false;
     }
-    $scope.choiceArgs.splice(idx, 1);
+    $scope.choiceArgs.pop();
   }
 
   $scope.confirmChoice = function() {
