@@ -21,6 +21,16 @@ module WebRebellion; class App < Sinatra::Application
 
   set games: {}
 
+  def initialize(app = nil)
+    super(app)
+    Thread.new do
+      loop do
+        Kernel.sleep(15)
+        settings.active_users_by_id.each_value { |u| u.keep_alive(35) }
+      end
+    end
+  end
+
   helpers do
     def current_username
       current_user && current_user.name

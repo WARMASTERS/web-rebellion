@@ -46,4 +46,12 @@ class User
     @last_event_sent = Time.now.to_i
     true
   end
+
+  def keep_alive(interval)
+    return false unless @event_stream
+    return false if Time.now.to_i - @last_event_sent < interval
+    @event_stream << "\n"
+    @last_event_sent = Time.now.to_i
+    true
+  end
 end
