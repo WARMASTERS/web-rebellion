@@ -110,6 +110,11 @@ module WebRebellion; class App < Sinatra::Application
     users.each { |u| u.send_event(type, data) }
   end
 
+  def update_watchers(game)
+    payload = JSON.dump(game.watchers.map(&:username))
+    send_event(game.users | game.watchers, 'watchers.update', payload)
+  end
+
   def update_lobby_users
     payload = JSON.dump(settings.active_users_by_id.values.map(&:serialize))
     send_event(lobby_users, 'users.update', payload)
@@ -142,6 +147,7 @@ module WebRebellion; class App < Sinatra::Application
       turn: game.turn_number,
       roles: roles,
       players: player_info,
+      watchers: game.watchers.map(&:username),
       winner: game.winner && game.winner.username,
       decision: game.decision_description,
       decision_makers: choice_names.keys.map(&:username),
@@ -390,6 +396,7 @@ module WebRebellion; class App < Sinatra::Application
     halt 404, 'no such game' unless game
 
     watch_game(game, current_user)
+    update_watchers(game)
     204
   end
 
@@ -402,6 +409,7 @@ module WebRebellion; class App < Sinatra::Application
 
     current_user.game = nil
     game.remove_watcher(current_user)
+    update_watchers(game)
     update_lobby_users
 
     redirect '/games'

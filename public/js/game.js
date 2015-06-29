@@ -48,6 +48,7 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
   $scope.game = {
     decision_makers: [],
     decision_choices: [],
+    watchers: [],
   };
   $scope.gameMessages = [];
   $scope.labelToConfirm = null;
@@ -152,11 +153,18 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
     });
   }
 
+  var onWatchersUpdate = function(event) {
+    $scope.$apply(function() {
+      $scope.game.watchers = JSON.parse(event.data);
+    });
+  }
+
   var es = new EventSource('/stream');
   es.addEventListener('chat.game', $scope.receiveChat, false);
   es.addEventListener('disconnect', $scope.disconnected, false);
   es.addEventListener('game.message', onGameMessage, false);
   es.addEventListener('game.update', onGameUpdate, false);
+  es.addEventListener('watchers.update', onWatchersUpdate, false);
 });
 
 app.controller('LobbyController', function($controller, $http, $scope, $window) {

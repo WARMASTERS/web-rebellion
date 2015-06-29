@@ -88,4 +88,8 @@
     .form-group
       %button.btn.btn-default{"ng-disabled" => "!game.winner && !game.my_username", type: "submit"} Send Message
 
+  %h1 Spectators
+  #watchers
+    %span{"ng-repeat" => "watcher in game.watchers"} {{ watcher }}
+
   %span Game {{ game.id }} started {{ formatTime(game.start_time) }}
