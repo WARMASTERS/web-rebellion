@@ -50,6 +50,7 @@
         %th Game ID
         %th Started
         %th Players
+        %th Spectators
         %th
     %tbody
       %tr{"ng-if" => "games.length == 0"}
@@ -58,6 +59,7 @@
         %td {{ game.id }}
         %td {{ formatTime(game.start_time) }}
         %td {{ game.usernames.join(', ') }}
+        %td {{ game.watcher_usernames.join(', ') }}
         %td
           %button.btn.btn-default{"ng-click" => "watchGame(game)"} Watch
 

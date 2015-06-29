@@ -90,6 +90,7 @@ module WebRebellion; class App < Sinatra::Application
     {
       id: game.id,
       usernames: game.users.map(&:username),
+      watcher_usernames: game.watchers.map(&:username),
       start_time: game.start_time.to_i,
     }
   end
