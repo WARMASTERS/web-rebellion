@@ -1,0 +1,3 @@
+public/css/*.min.css -diff
+public/fonts/* -diff
+public/js/*.min.js -diff
