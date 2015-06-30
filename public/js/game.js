@@ -1,5 +1,6 @@
 var app = angular.module('webRebellion', [
   'luegg.directives',
+  'ui.bootstrap',
 ]);
 
 app.controller('BaseController', function($http, $scope) {
