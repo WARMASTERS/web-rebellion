@@ -31,6 +31,10 @@ module WebRebellion; class App < Sinatra::Application
     end
   end
 
+  configure do
+    set :haml, escape_html: true
+  end
+
   helpers do
     def current_username
       current_user && current_user.name
