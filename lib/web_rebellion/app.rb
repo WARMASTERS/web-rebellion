@@ -5,6 +5,7 @@ require 'securerandom'
 require 'sinatra/base'
 require 'time'
 require 'tilt/haml'
+require_relative 'game'
 require_relative 'game_outputter'
 require_relative 'proposal'
 require_relative 'user'
@@ -234,7 +235,7 @@ module WebRebellion; class App < Sinatra::Application
 
     proposal = current_proposal
     if current_proposal.everyone_accepted?
-      game = RebellionG54::Game.new(proposal.initiator.username)
+      game = Game.new(proposal.initiator.username)
       outputter = GameOutputter.new(self, game)
       game.output_streams << outputter
       game.roles = proposal.roles
