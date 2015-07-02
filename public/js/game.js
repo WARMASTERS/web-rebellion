@@ -3,6 +3,11 @@ var app = angular.module('webRebellion', [
   'ui.bootstrap',
 ]);
 
+app.run(function($http) {
+  var token = angular.element(document.querySelector('meta[name=_csrf]')).attr('content');
+  $http.defaults.headers.post['X_CSRF_TOKEN'] = token;
+});
+
 app.controller('BaseController', function($http, $scope) {
   $scope.messages = [];
   $scope.disconnectedBy = null;

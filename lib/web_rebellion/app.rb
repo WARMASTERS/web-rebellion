@@ -1,4 +1,5 @@
 require 'json'
+require 'rack/csrf'
 require 'rebellion_g54/game'
 require 'rebellion_g54/role'
 require 'securerandom'
@@ -13,6 +14,8 @@ require_relative 'user'
 module WebRebellion; class App < Sinatra::Application
 
   use Rack::Session::Cookie, secret: SecureRandom.hex(64)
+  use Rack::Csrf, raise: true
+
   set server: 'thin'
   set root: File.dirname(File.dirname(File.dirname(__FILE__)))
 

@@ -10,6 +10,7 @@
       %h1.page_header Log in
 
       %form{name: "loginForm", action: "/login", method: "post"}
+        != Rack::Csrf.tag(env)
         .form-group
           %label{for: "username"} Username:
           %input.form-control{id: "username", name: "username", placeholder: "Username",
@@ -25,6 +26,7 @@
       %p Blank passwords are allowed, but then anyone who knows you have a blank password can use your account. You've been warned.
 
       %form{name: "registerForm", action: "/register", method: "post"}
+        != Rack::Csrf.tag(env)
         .form-group
           %label{for: "reg_username"} Username:
           %input.form-control{id: "reg_username", name: "username", placeholder: "Username",
