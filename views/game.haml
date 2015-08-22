@@ -43,6 +43,7 @@
         %td{"ng-if" => "!choice.available"}
           %button.btn.btn-sm.btn-default{disabled: true, "ng-if" => "!choice.available"} {{ label }}
         %td
+          %s{"ng-if" => "!choice.available"} {{ choice.description }}
           {{ choice.available ? choice.description : choice.why_unavailable }}
 
     %button.btn.btn-danger{"ng-if" => "game.winner || !game.my_username", "ng-click" => "leaveGame()"} Leave Game
