@@ -1,15 +1,15 @@
 GIT
   remote: https://github.com/petertseng/rebellion_g54.git
-  revision: 24ce6d44362900474a15b145dc197bb676304e58
+  revision: f0e345f68a674f93dd93b254e252ef008cf73050
   specs:
-    rebellion_g54 (1.0.2)
+    rebellion_g54 (1.0.3)
 
 GEM
   remote: https://rubygems.org/
   specs:
     daemons (1.2.3)
-    eventmachine (1.0.7)
-    haml (4.0.6)
+    eventmachine (1.0.8)
+    haml (4.0.7)
       tilt
     rack (1.6.4)
     rack-protection (1.5.3)
