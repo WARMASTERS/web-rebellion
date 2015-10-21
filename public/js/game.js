@@ -129,7 +129,7 @@ app.controller('GameController', function($controller, $http, $scope, $window) {
       // If this choice requires a single target,
       // and it's not possible to choose myself,
       // we may be able to auto-fill the target in a 2p game.
-      if (choice.args.length == 1 && $scope.game.num_living_players == 2 && !choice.args[0].self) {
+      if (choice.args.length == 1 && $scope.game.num_living_players == 2 && !choice.args[0].self && choice.args[0].type == 'player') {
         tryAutoChoice(label, choice);
       }
     } else {
