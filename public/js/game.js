@@ -246,7 +246,7 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   var allRoles = {
     finance: {
       basic: ['banker', 'farmer', 'spy'],
-      advanced: ['speculator', 'capitalist'],
+      advanced: ['speculator', 'capitalist', 'plantation_owner', 'world_bank'],
     },
     communications: {
       basic: ['director', 'reporter', 'newscaster'],
@@ -254,11 +254,11 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
     },
     force: {
       basic: ['guerrilla', 'judge', 'general'],
-      advanced: ['mercenary', 'crime_boss'],
+      advanced: ['mercenary', 'crime_boss', 'anarchist', 'paramilitary'],
     },
     special_interests: {
       basic: ['politician', 'lawyer', 'peacekeeper', 'intellectual'],
-      advanced: ['priest', 'communist', 'foreign_consular', 'customs_officer', 'protestor', 'missionary'],
+      advanced: ['priest', 'communist', 'foreign_consular', 'customs_officer', 'protestor', 'missionary', 'arms_dealer', 'socialist'],
     },
   }
 
