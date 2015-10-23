@@ -423,6 +423,14 @@ module WebRebellion; class App < Sinatra::Application
     redirect '/games'
   end
 
+  get '/roles.json', provides: 'application/json' do
+    groups = Hash.new { |h, category| h[category] = Hash.new { |cat_h, adv| cat_h[adv] = [] } }
+    RebellionG54::Role::ALL.each { |role, (category, advanced)|
+      groups[category][advanced ? 'advanced' : 'basic'] << role.to_s
+    }
+    JSON.dump(groups)
+  end
+
   get '/game.json', provides: 'application/json' do
     game = current_game
     halt '{}' unless game

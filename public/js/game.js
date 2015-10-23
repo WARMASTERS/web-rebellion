@@ -243,24 +243,10 @@ app.controller('LobbyController', function($controller, $http, $scope, $window) 
   $scope.lastProposal = null;
   $scope.myUsername = null;
 
-  var allRoles = {
-    finance: {
-      basic: ['banker', 'farmer', 'spy'],
-      advanced: ['speculator', 'capitalist', 'plantation_owner', 'world_bank'],
-    },
-    communications: {
-      basic: ['director', 'reporter', 'newscaster'],
-      advanced: ['writer', 'producer'],
-    },
-    force: {
-      basic: ['guerrilla', 'judge', 'general'],
-      advanced: ['mercenary', 'crime_boss', 'anarchist', 'paramilitary'],
-    },
-    special_interests: {
-      basic: ['politician', 'lawyer', 'peacekeeper', 'intellectual'],
-      advanced: ['priest', 'communist', 'foreign_consular', 'customs_officer', 'protestor', 'missionary', 'arms_dealer', 'socialist'],
-    },
-  }
+  var allRoles = {};
+  $http.get('/roles.json').success(function(data, status, headers, config) {
+    allRoles = data;
+  });
 
   $http.get('/games.json').success(function(data, status, headers, config) {
     $scope.myUsername = data.username;
