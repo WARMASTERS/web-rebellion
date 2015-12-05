@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/petertseng/rebellion_g54.git
-  revision: 166fab8df70a50ff97e5b7fe4b78520b116f37e3
+  revision: b2f41e0ace893086679357c9ee8bc5f64ed266af
   specs:
-    rebellion_g54 (1.1.0)
+    rebellion_g54 (2.0.0)
 
 GEM
   remote: https://rubygems.org/

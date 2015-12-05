@@ -296,25 +296,22 @@ module WebRebellion; class App < Sinatra::Application
 
     proposal = current_proposal
     if current_proposal.everyone_accepted?
-      game = Game.new(proposal.initiator.username)
+      begin
+        game = Game.new(proposal.initiator.username, proposal.players, proposal.roles)
+      rescue => e
+        send_event(proposal.players, 'proposal.error', e.message)
+        return 204
+      end
       outputter = GameOutputter.new(self, game)
       game.output_streams << outputter
-      game.roles = proposal.roles
       proposal.players.each { |p|
         p.proposal = nil
         p.game = game
-        game.add_player(p)
       }
-      success, error = game.start_game
       settings.games[game.id] = game
-      if success
-        send_event(proposal.players, 'game.start', JSON.dump(proposal.serialize))
-        update_lobby_users
-        update_lobby_games
-      else
-        send_event([proposal.players], 'proposal.error', error)
-        proposal.players.each { |p| p.game = nil }
-      end
+      send_event(proposal.players, 'game.start', JSON.dump(proposal.serialize))
+      update_lobby_users
+      update_lobby_games
     else
       send_event(proposal.players, 'proposal.update', JSON.dump(proposal.serialize))
     end

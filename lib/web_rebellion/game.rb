@@ -7,8 +7,8 @@ module WebRebellion; class Game < RebellionG54::Game
 
   @games_created = 0
 
-  def initialize(name)
-    super(name)
+  def initialize(*args)
+    super(*args)
     @watchers = {}
   end
 
